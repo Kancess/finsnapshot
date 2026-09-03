@@ -193,6 +193,96 @@ export async function queryBudgetStatus(days = 30) {
     }));
 }
 
+export async function queryFinancialBriefing() {
+  const [nw, cf, goals, recurring, health, budget] = await Promise.all([
+    queryNetWorth(),
+    queryCashflow(6),
+    queryGoals(),
+    queryRecurring(),
+    queryHealthScore(),
+    queryBudgetStatus(30),
+  ]);
+
+  const goalsOnTrack = goals.filter((g) => g.progress_pct >= 100 || (g.progress_pct > 0 && g.progress_pct >= 50)).length;
+  const goalsBehind = goals.filter((g) => g.progress_pct < 50).length;
+  const overBudgetCats = budget.filter((b) => b.over_budget).map((b) => b.category);
+  const monthlySaved = cf.avg_income - cf.avg_expenses;
+
+  const alerts: string[] = [];
+  if (overBudgetCats.length > 0) alerts.push(`Over budget in: ${overBudgetCats.join(", ")}`);
+  if (cf.trend === "declining") alerts.push("Savings trend is declining — expenses rising faster than income");
+  if (goalsBehind > 0) alerts.push(`${goalsBehind} goal${goalsBehind > 1 ? "s" : ""} behind schedule`);
+
+  return {
+    summary: `Net worth ${fmt(nw.net_worth)} (${fmt(nw.assets)} assets, ${fmt(nw.liabilities)} debt). Saving ${cf.avg_savings_rate.toFixed(0)}% of income — avg ${fmt(monthlySaved)}/month surplus, trend ${cf.trend}. Health score ${health.score}/100 (${health.rating}). ${goals.length} goals: ${goalsOnTrack} on track, ${goalsBehind} behind. Monthly recurring: ${fmt(recurring.total_monthly)}.${alerts.length > 0 ? " Alerts: " + alerts.join("; ") + "." : ""}`,
+    net_worth: { total: nw.net_worth, assets: nw.assets, liabilities: nw.liabilities },
+    cashflow: { avg_monthly_income: cf.avg_income, avg_monthly_expenses: cf.avg_expenses, avg_monthly_saved: monthlySaved, savings_rate_pct: cf.avg_savings_rate, trend: cf.trend },
+    health: { score: health.score, rating: health.rating, factors: health.factors },
+    goals: { total: goals.length, on_track: goalsOnTrack, behind: goalsBehind, items: goals },
+    budget: { categories_over: overBudgetCats.length, over_budget_categories: overBudgetCats },
+    recurring: { total_monthly: recurring.total_monthly, count: recurring.subscriptions.length },
+    alerts,
+  };
+}
+
+export async function queryForecastCashflow(months = 3) {
+  const cf = await queryCashflow(6);
+  const avgIncome = cf.avg_income;
+  const avgExpenses = cf.avg_expenses;
+  const trendFactor = cf.trend === "improving" ? 0.985 : cf.trend === "declining" ? 1.015 : 1.0;
+
+  const base = new Date("2026-09-03");
+  const forecast = [];
+  let cumulativeNet = 0;
+  let projectedExpenses = avgExpenses;
+
+  for (let i = 1; i <= months; i++) {
+    projectedExpenses = projectedExpenses * trendFactor;
+    const date = new Date(base.getFullYear(), base.getMonth() + i, 1);
+    const label = date.toLocaleDateString("en-AU", { month: "short", year: "numeric" });
+    const net = avgIncome - projectedExpenses;
+    cumulativeNet += net;
+    forecast.push({
+      month: label,
+      projected_income: Math.round(avgIncome * 100) / 100,
+      projected_expenses: Math.round(projectedExpenses * 100) / 100,
+      projected_net: Math.round(net * 100) / 100,
+      cumulative_net: Math.round(cumulativeNet * 100) / 100,
+    });
+  }
+
+  return {
+    forecast,
+    avg_monthly_income: Math.round(avgIncome * 100) / 100,
+    avg_monthly_expenses: Math.round(avgExpenses * 100) / 100,
+    trend: cf.trend,
+    basis: "6-month historical average with trend adjustment",
+  };
+}
+
+export async function querySafeToSpend() {
+  const budget = await queryBudgetStatus(30);
+
+  const now = new Date("2026-09-03");
+  const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+  const daysElapsed = now.getDate();
+  const daysRemaining = Math.max(1, daysInMonth - daysElapsed);
+
+  const remainingTotal = budget.reduce((s, b) => s + Math.max(0, b.remaining), 0);
+  const overTotal = budget.reduce((s, b) => s + Math.max(0, -b.remaining), 0);
+  const safeToSpend = Math.max(0, remainingTotal - overTotal);
+  const dailyRate = safeToSpend / daysRemaining;
+
+  return {
+    safe_to_spend: Math.round(safeToSpend * 100) / 100,
+    daily_rate: Math.round(dailyRate * 100) / 100,
+    days_remaining_in_month: daysRemaining,
+    days_elapsed: daysElapsed,
+    over_budget_total: Math.round(overTotal * 100) / 100,
+    remaining_by_category: budget.map((b) => ({ category: b.category, budget: b.budget, spent: b.spent, remaining: b.remaining, over_budget: b.over_budget })),
+  };
+}
+
 export async function applyCategoryRules(description: string): Promise<string | null> {
   const rules = await getRules();
   for (const rule of rules) {

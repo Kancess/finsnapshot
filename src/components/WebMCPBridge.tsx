@@ -70,6 +70,15 @@ export default function WebMCPBridge() {
       ["set_account_balance", "Update an account balance after importing a bank statement.", {
         account_id: { type: "string" }, balance: { type: "number" },
       }],
+      ["delete_goal", "Delete a financial goal by id.", { id: { type: "string" } }],
+      ["set_budget", "Set or update the monthly budget for a spending category.", {
+        category_id: { type: "string" }, budget_monthly: { type: "number" },
+      }],
+      ["get_financial_briefing", "Get a complete financial briefing in one call — net worth, cashflow, health, goals, alerts.", {}],
+      ["forecast_cashflow", "Project future monthly cashflow based on historical averages and trend.", {
+        months: { type: "number" },
+      }],
+      ["calculate_safe_to_spend", "Calculate how much is safely available to spend this month based on remaining budget.", {}],
     ];
 
     for (const [name, desc, schema] of defs) {

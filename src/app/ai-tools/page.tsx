@@ -139,17 +139,63 @@ const TOOLS = [
     example: `{"tool": "set_account_balance", "account_id": "checking", "balance": 12540.00}`,
     returns: "{ success, account_id, balance }",
   },
+  {
+    name: "delete_goal",
+    label: "Delete Goal",
+    icon: "⊖",
+    color: "#a63446",
+    description: "Remove a financial goal by id.",
+    example: `{"tool": "delete_goal", "id": "g1"}`,
+    returns: "{ success, id }",
+  },
+  {
+    name: "set_budget",
+    label: "Set Budget",
+    icon: "⊡",
+    color: "#b8872a",
+    description: "Set or update the monthly budget for a spending category. Pass null to remove it.",
+    example: `{"tool": "set_budget", "category_id": "dining", "budget_monthly": 300}`,
+    returns: "{ success, category_id, budget_monthly }",
+  },
+  {
+    name: "get_financial_briefing",
+    label: "Briefing",
+    icon: "◉",
+    color: "#103766",
+    description: "One-call snapshot: net worth, cashflow, health score, goals, recurring commitments, and alerts. Ideal as a first call.",
+    example: `{"tool": "get_financial_briefing"}`,
+    returns: "{ summary, net_worth, cashflow, health, goals, budget, recurring, alerts[] }",
+  },
+  {
+    name: "forecast_cashflow",
+    label: "Forecast",
+    icon: "↗",
+    color: "#1e8a56",
+    description: "Project monthly cashflow N months forward based on 6-month averages, adjusted for current spending trend.",
+    example: `{"tool": "forecast_cashflow", "months": 6}`,
+    returns: "{ forecast[], avg_monthly_income, avg_monthly_expenses, trend }",
+  },
+  {
+    name: "calculate_safe_to_spend",
+    label: "Safe to Spend",
+    icon: "◎",
+    color: "#1e8a56",
+    description: "How much can I safely spend this month? Returns remaining discretionary budget and daily spending rate.",
+    example: `{"tool": "calculate_safe_to_spend"}`,
+    returns: "{ safe_to_spend, daily_rate, days_remaining_in_month, remaining_by_category[] }",
+  },
 ];
 
 const PROMPTS = [
+  "Give me a full financial briefing — net worth, savings rate, goals, and anything I should be worried about.",
+  "How much can I safely spend for the rest of this month without blowing my budget?",
+  "Project my cashflow for the next 6 months — will I be saving more or less?",
   "Am I spending too much on dining and subscriptions this month compared to last?",
   "How is my investment portfolio performing and which holding has the best return?",
-  "What's my net worth breakdown and how has my savings rate trended over 6 months?",
   "Which recurring subscriptions could I cancel to free up budget?",
-  "How does my financial health score break down — where should I focus first?",
-  "How far am I from each of my financial goals, and which ones am I on track to hit?",
+  "Set my dining budget to $300 per month.",
   "I have a CSV of last month's bank transactions — import them and categorise anything that looks like groceries or transport.",
-  "Set me a new goal to save $20,000 for a Europe trip by June 2027.",
+  "Set me a new goal to save $20,000 for a Europe trip by June 2027, then delete the Japan Holiday goal.",
 ];
 
 function ScoreArc({ score }: { score: number }) {
@@ -223,12 +269,12 @@ export default function AIToolsPage() {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
         <div>
           <h1 style={{ fontSize: 26, fontWeight: 800, color: "var(--mid)", letterSpacing: "-.03em" }}>AI Tools</h1>
-          <p style={{ fontSize: 13, color: "var(--steel)", marginTop: 2 }}>14 WebMCP tools registered via <code style={{ background: "var(--s2)", padding: "1px 5px", borderRadius: 4, fontSize: 11 }}>document.modelContext</code></p>
+          <p style={{ fontSize: 13, color: "var(--steel)", marginTop: 2 }}>19 WebMCP tools registered via <code style={{ background: "var(--s2)", padding: "1px 5px", borderRadius: 4, fontSize: 11 }}>document.modelContext</code></p>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
           <div style={{ background: "var(--gr-l)", color: "var(--gr)", borderRadius: 100, padding: "6px 14px", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", gap: 5 }}>
             <span style={{ width: 7, height: 7, borderRadius: 100, background: "var(--gr)", display: "inline-block" }} />
-            14 tools active
+            19 tools active
           </div>
         </div>
       </div>

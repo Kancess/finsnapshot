@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
-import { isSeeded, getAccounts, getTransactions, getPortfolio, putGoal, putTransaction, putAccount } from "@/lib/db";
+import { isSeeded, getAccounts, getTransactions, getPortfolio, getCategories, putGoal, putCategory, deleteGoal, putTransaction, putAccount } from "@/lib/db";
 import type { Goal } from "@/lib/db";
 import { seedDatabase } from "@/lib/seed";
-import { queryNetWorth, queryCashflow, querySpendingByCategory, queryRecurring, queryHealthScore, queryGoals, queryBudgetStatus, applyCategoryRules } from "@/lib/queries";
+import { queryNetWorth, queryCashflow, querySpendingByCategory, queryRecurring, queryHealthScore, queryGoals, queryBudgetStatus, queryFinancialBriefing, queryForecastCashflow, querySafeToSpend, applyCategoryRules } from "@/lib/queries";
 
 export default function WebMCPProvider() {
   useEffect(() => {
@@ -110,6 +110,26 @@ export default function WebMCPProvider() {
           await putAccount({ ...account, manual_balance: balance });
           return { success: true, account_id, balance };
         },
+        delete_goal: async (args) => {
+          const { id } = (args as { id: string }) ?? {};
+          if (!id) return { success: false, error: "id is required" };
+          await deleteGoal(id);
+          return { success: true, id };
+        },
+        set_budget: async (args) => {
+          const { category_id, budget_monthly } = (args as { category_id: string; budget_monthly: number | null }) ?? {};
+          const cats = await getCategories();
+          const cat = cats.find((c) => c.id === category_id);
+          if (!cat) return { success: false, error: `Category ${category_id} not found` };
+          await putCategory({ ...cat, budget_monthly: budget_monthly ?? null });
+          return { success: true, category_id, budget_monthly: budget_monthly ?? null };
+        },
+        get_financial_briefing: () => queryFinancialBriefing(),
+        forecast_cashflow: (args) => {
+          const { months = 3 } = (args as { months?: number }) ?? {};
+          return queryForecastCashflow(months);
+        },
+        calculate_safe_to_spend: () => querySafeToSpend(),
       };
     })();
   }, []);

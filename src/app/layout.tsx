@@ -70,7 +70,12 @@ const webmcpShim = `(function(){
     {name:'set_goal',desc:'Create or update a financial goal. Provide an id to update an existing goal.',schema:{type:'object',properties:{id:{type:'string'},name:{type:'string'},target_amount:{type:'number'},target_date:{type:'string'},account_id:{type:'string'}},required:['name','target_amount','target_date']}},
     {name:'categorize_transaction',desc:'Update the category of a transaction by id.',schema:{type:'object',properties:{id:{type:'string'},category_id:{type:'string'}},required:['id','category_id']}},
     {name:'add_transactions',desc:'Bulk-import transactions (e.g. from a bank statement). Auto-categorises using stored rules if category_id is omitted.',schema:{type:'object',properties:{transactions:{type:'array',items:{type:'object',properties:{date:{type:'string'},description:{type:'string'},amount:{type:'number'},account_id:{type:'string'},category_id:{type:'string'}},required:['date','description','amount','account_id']}}},required:['transactions']}},
-    {name:'set_account_balance',desc:'Update the balance of an account (use after importing a bank statement to reconcile).',schema:{type:'object',properties:{account_id:{type:'string'},balance:{type:'number'}},required:['account_id','balance']}}
+    {name:'set_account_balance',desc:'Update the balance of an account (use after importing a bank statement to reconcile).',schema:{type:'object',properties:{account_id:{type:'string'},balance:{type:'number'}},required:['account_id','balance']}},
+    {name:'delete_goal',desc:'Delete a financial goal by id.',schema:{type:'object',properties:{id:{type:'string'}},required:['id']}},
+    {name:'set_budget',desc:'Set or update the monthly budget for a spending category. Pass null to remove the budget.',schema:{type:'object',properties:{category_id:{type:'string'},budget_monthly:{type:['number','null']}},required:['category_id','budget_monthly']}},
+    {name:'get_financial_briefing',desc:'Get a complete financial briefing — net worth, cashflow, health score, goals, recurring commitments, and alerts — in one call.',schema:{type:'object',properties:{},required:[]}},
+    {name:'forecast_cashflow',desc:'Project future monthly cashflow based on 6-month income and expense averages, adjusted for current trend.',schema:{type:'object',properties:{months:{type:'number'}}}},
+    {name:'calculate_safe_to_spend',desc:'Calculate how much discretionary money is safely available to spend this month, based on remaining budget across all categories.',schema:{type:'object',properties:{},required:[]}}
   ];
   TOOLS.forEach(function(t){
     var toolDef={

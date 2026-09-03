@@ -143,7 +143,7 @@ export default function Sidebar() {
           <span style={{ fontSize: 15 }}>⚡</span>
           AI Tools
           <span style={{ marginLeft: "auto", fontSize: 9, background: "rgba(30,138,86,.3)", color: "#4ade9a", borderRadius: 100, padding: "1px 6px", fontWeight: 700 }}>
-            14
+            19
           </span>
         </Link>
       </div>

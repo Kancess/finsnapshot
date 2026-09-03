@@ -125,6 +125,35 @@ const TOOLS = [
       required: ["account_id", "balance"],
     },
   },
+  {
+    name: "delete_goal",
+    description: "Delete a financial goal by id.",
+    inputSchema: { type: "object", properties: { id: { type: "string" } }, required: ["id"] },
+  },
+  {
+    name: "set_budget",
+    description: "Set or update the monthly budget for a spending category. Pass null to remove the budget.",
+    inputSchema: {
+      type: "object",
+      properties: { category_id: { type: "string" }, budget_monthly: { type: ["number", "null"] } },
+      required: ["category_id", "budget_monthly"],
+    },
+  },
+  {
+    name: "get_financial_briefing",
+    description: "Get a complete financial briefing — net worth, cashflow, health score, goals, recurring commitments, and alerts — in one call.",
+    inputSchema: { type: "object", properties: {}, required: [] },
+  },
+  {
+    name: "forecast_cashflow",
+    description: "Project future monthly cashflow based on 6-month income and expense averages, adjusted for current trend.",
+    inputSchema: { type: "object", properties: { months: { type: "number" } } },
+  },
+  {
+    name: "calculate_safe_to_spend",
+    description: "Calculate how much discretionary money is safely available to spend this month, based on remaining budget across all categories.",
+    inputSchema: { type: "object", properties: {}, required: [] },
+  },
 ];
 
 export async function GET() {
