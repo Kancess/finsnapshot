@@ -84,6 +84,60 @@ const TOOLS = [
     example: `{"tool": "get_financial_health_score"}`,
     returns: "{ score, rating, factors[] }",
   },
+  {
+    name: "get_goals",
+    label: "Goals",
+    icon: "◎",
+    color: "#1e8a56",
+    description: "All financial goals with current balance progress toward each target.",
+    example: `{"tool": "get_goals"}`,
+    returns: "{ goals[], currency }",
+  },
+  {
+    name: "get_budget_status",
+    label: "Budget",
+    icon: "▤",
+    color: "#b8872a",
+    description: "Actual spending vs monthly budget per category for the last N days.",
+    example: `{"tool": "get_budget_status", "days": 30}`,
+    returns: "{ categories[], over_budget_count, total_budget, total_spent }",
+  },
+  {
+    name: "set_goal",
+    label: "Set Goal",
+    icon: "⊕",
+    color: "#103766",
+    description: "Create or update a financial goal. Pass an id to update an existing goal.",
+    example: `{"tool": "set_goal", "name": "Emergency Fund", "target_amount": 30000, "target_date": "2026-12-31"}`,
+    returns: "{ success, goal }",
+  },
+  {
+    name: "categorize_transaction",
+    label: "Categorise",
+    icon: "⊞",
+    color: "#4b607d",
+    description: "Update the category of a transaction by id.",
+    example: `{"tool": "categorize_transaction", "id": "tx-123", "category_id": "dining"}`,
+    returns: "{ success, id, category_id }",
+  },
+  {
+    name: "add_transactions",
+    label: "Import",
+    icon: "⊟",
+    color: "#4b607d",
+    description: "Bulk-import transactions from a bank statement. Auto-categorises when category_id is omitted.",
+    example: `{"tool": "add_transactions", "transactions": [{"date": "2026-08-01", "description": "Coles", "amount": -85.40, "account_id": "checking"}]}`,
+    returns: "{ imported, auto_categorized, uncategorized, transactions[] }",
+  },
+  {
+    name: "set_account_balance",
+    label: "Reconcile",
+    icon: "⊜",
+    color: "#a63446",
+    description: "Update an account balance — use after importing a bank statement to reconcile.",
+    example: `{"tool": "set_account_balance", "account_id": "checking", "balance": 12540.00}`,
+    returns: "{ success, account_id, balance }",
+  },
 ];
 
 const PROMPTS = [
@@ -92,7 +146,9 @@ const PROMPTS = [
   "What's my net worth breakdown and how has my savings rate trended over 6 months?",
   "Which recurring subscriptions could I cancel to free up budget?",
   "How does my financial health score break down — where should I focus first?",
-  "How much of my income goes to each category on average?",
+  "How far am I from each of my financial goals, and which ones am I on track to hit?",
+  "I have a CSV of last month's bank transactions — import them and categorise anything that looks like groceries or transport.",
+  "Set me a new goal to save $20,000 for a Europe trip by June 2027.",
 ];
 
 function ScoreArc({ score }: { score: number }) {
@@ -164,12 +220,12 @@ export default function AIToolsPage() {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
         <div>
           <h1 style={{ fontSize: 26, fontWeight: 800, color: "var(--mid)", letterSpacing: "-.03em" }}>AI Tools</h1>
-          <p style={{ fontSize: 13, color: "var(--steel)", marginTop: 2 }}>8 WebMCP tools registered via <code style={{ background: "var(--s2)", padding: "1px 5px", borderRadius: 4, fontSize: 11 }}>navigator.modelContext</code></p>
+          <p style={{ fontSize: 13, color: "var(--steel)", marginTop: 2 }}>14 WebMCP tools registered via <code style={{ background: "var(--s2)", padding: "1px 5px", borderRadius: 4, fontSize: 11 }}>document.modelContext</code></p>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
           <div style={{ background: "var(--gr-l)", color: "var(--gr)", borderRadius: 100, padding: "6px 14px", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", gap: 5 }}>
             <span style={{ width: 7, height: 7, borderRadius: 100, background: "var(--gr)", display: "inline-block" }} />
-            8 tools active
+            14 tools active
           </div>
         </div>
       </div>
@@ -260,7 +316,7 @@ export default function AIToolsPage() {
             <div style={{ fontSize: 13, fontWeight: 700, color: "var(--mid)", marginBottom: 12 }}>How it works</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {[
-                { step: "1", text: "FinSnapshot registers 8 tools on page load via navigator.modelContext.registerTool()" },
+                { step: "1", text: "FinSnapshot registers 14 tools on page load via document.modelContext — the WebMCP standard API" },
                 { step: "2", text: "A WebMCP-compatible AI (e.g. ChatGPT) detects the available tools automatically" },
                 { step: "3", text: "Ask any financial question — the AI calls the right tool, reads your real data, and answers" },
                 { step: "4", text: "All data stays in your browser's IndexedDB. Nothing leaves your device." },

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
 import WebMCPProvider from "@/components/WebMCPProvider";
@@ -94,8 +93,12 @@ const webmcpShim = `(function(){
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={jakarta.variable}>
+      <head>
+        {/* Raw <script> in <head> ensures synchronous execution during HTML parse,
+            before the WebMCP Inspector extension scans for document.modelContext. */}
+        <script dangerouslySetInnerHTML={{ __html: webmcpShim }} />
+      </head>
       <body className="flex h-screen overflow-hidden" style={{ background: "var(--bg)" }}>
-        <Script id="webmcp-shim" strategy="beforeInteractive">{webmcpShim}</Script>
         <WebMCPProvider />
         <Sidebar />
         <main className="flex-1 overflow-y-auto">
