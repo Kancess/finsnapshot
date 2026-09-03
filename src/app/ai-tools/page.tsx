@@ -1,0 +1,279 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { isSeeded } from "@/lib/db";
+import { seedDatabase } from "@/lib/seed";
+import { queryHealthScore } from "@/lib/queries";
+
+interface HealthData {
+  score: number;
+  rating: string;
+  factors: { name: string; score: number; note: string }[];
+}
+
+const TOOLS = [
+  {
+    name: "get_net_worth",
+    label: "Net Worth",
+    icon: "◈",
+    color: "#103766",
+    description: "Total assets, liabilities, and a breakdown by account type.",
+    example: `{"tool": "get_net_worth"}`,
+    returns: "{ assets, liabilities, net_worth, breakdown[] }",
+  },
+  {
+    name: "get_accounts",
+    label: "Accounts",
+    icon: "✦",
+    color: "#1e8a56",
+    description: "All financial accounts with current balances. Filterable by type.",
+    example: `{"tool": "get_accounts", "type": "investment"}`,
+    returns: "{ accounts[] }",
+  },
+  {
+    name: "get_transactions",
+    label: "Transactions",
+    icon: "↔",
+    color: "#4b607d",
+    description: "Recent transactions, filterable by category, account, and date range.",
+    example: `{"tool": "get_transactions", "days": 30, "limit": 20}`,
+    returns: "{ transactions[], total }",
+  },
+  {
+    name: "get_spending_by_category",
+    label: "Spending",
+    icon: "◑",
+    color: "#b8872a",
+    description: "Spending breakdown by category over any period, with optional period comparison.",
+    example: `{"tool": "get_spending_by_category", "days": 30, "compare_previous_period": true}`,
+    returns: "{ categories[], total_days }",
+  },
+  {
+    name: "get_cashflow",
+    label: "Cashflow",
+    icon: "↕",
+    color: "#a63446",
+    description: "Monthly income vs expenses and savings rate trend.",
+    example: `{"tool": "get_cashflow", "months": 6}`,
+    returns: "{ months[], avg_income, avg_expenses, avg_savings_rate, trend }",
+  },
+  {
+    name: "get_portfolio",
+    label: "Portfolio",
+    icon: "◐",
+    color: "#103766",
+    description: "Investment portfolio holdings, allocation, and gain/loss.",
+    example: `{"tool": "get_portfolio", "sort_by": "value"}`,
+    returns: "{ holdings[], allocation[], total_value, total_gain_pct }",
+  },
+  {
+    name: "get_recurring_charges",
+    label: "Recurring",
+    icon: "⟳",
+    color: "#1e8a56",
+    description: "Detected recurring transactions — subscriptions and bills — over 90 days.",
+    example: `{"tool": "get_recurring_charges"}`,
+    returns: "{ subscriptions[], total_monthly }",
+  },
+  {
+    name: "get_financial_health_score",
+    label: "Health Score",
+    icon: "♡",
+    color: "#a63446",
+    description: "0–100 financial health score with factor breakdown covering savings, emergency fund, debt, and portfolio.",
+    example: `{"tool": "get_financial_health_score"}`,
+    returns: "{ score, rating, factors[] }",
+  },
+];
+
+const PROMPTS = [
+  "Am I spending too much on dining and subscriptions this month compared to last?",
+  "How is my investment portfolio performing and which holding has the best return?",
+  "What's my net worth breakdown and how has my savings rate trended over 6 months?",
+  "Which recurring subscriptions could I cancel to free up budget?",
+  "How does my financial health score break down — where should I focus first?",
+  "How much of my income goes to each category on average?",
+];
+
+function ScoreArc({ score }: { score: number }) {
+  const r = 52;
+  const cx = 70;
+  const cy = 70;
+  const startAngle = -220;
+  const sweep = 260;
+  const endAngle = startAngle + (sweep * score) / 100;
+
+  const toRad = (deg: number) => (deg * Math.PI) / 180;
+  const arc = (angle: number) => ({
+    x: cx + r * Math.cos(toRad(angle)),
+    y: cy + r * Math.sin(toRad(angle)),
+  });
+
+  const s = arc(startAngle);
+  const e = arc(endAngle);
+  const full = arc(startAngle + sweep);
+  const largeArc = sweep * (score / 100) > 180 ? 1 : 0;
+  const fullLarge = sweep > 180 ? 1 : 0;
+
+  const color = score >= 75 ? "#1e8a56" : score >= 50 ? "#b8872a" : "#a63446";
+
+  return (
+    <svg width={140} height={100} viewBox="0 0 140 100">
+      {/* Track */}
+      <path
+        d={`M ${s.x} ${s.y} A ${r} ${r} 0 ${fullLarge} 1 ${full.x} ${full.y}`}
+        fill="none" stroke="var(--bd)" strokeWidth={10} strokeLinecap="round"
+      />
+      {/* Fill */}
+      {score > 0 && (
+        <path
+          d={`M ${s.x} ${s.y} A ${r} ${r} 0 ${largeArc} 1 ${e.x} ${e.y}`}
+          fill="none" stroke={color} strokeWidth={10} strokeLinecap="round"
+        />
+      )}
+      <text x={cx} y={cy + 6} textAnchor="middle" style={{ fontSize: 22, fontWeight: 800, fill: color, fontFamily: "inherit" }}>{score}</text>
+      <text x={cx} y={cy + 20} textAnchor="middle" style={{ fontSize: 9, fill: "var(--steel)", fontFamily: "inherit" }}>out of 100</text>
+    </svg>
+  );
+}
+
+export default function AIToolsPage() {
+  const [health, setHealth] = useState<HealthData | null>(null);
+  const [copied, setCopied] = useState<string | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      const seeded = await isSeeded();
+      if (!seeded) await seedDatabase();
+      const h = await queryHealthScore();
+      setHealth(h as HealthData);
+    })();
+  }, []);
+
+  async function copy(text: string, key: string) {
+    await navigator.clipboard.writeText(text);
+    setCopied(key);
+    setTimeout(() => setCopied(null), 2000);
+  }
+
+  const ratingColor = (r: string) => r === "Excellent" ? "var(--gr)" : r === "Good" ? "var(--navy)" : r === "Fair" ? "var(--gold)" : "var(--cr)";
+
+  return (
+    <div style={{ padding: "28px 32px 60px", maxWidth: 1000 }}>
+      {/* Header */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
+        <div>
+          <h1 style={{ fontSize: 26, fontWeight: 800, color: "var(--mid)", letterSpacing: "-.03em" }}>AI Tools</h1>
+          <p style={{ fontSize: 13, color: "var(--steel)", marginTop: 2 }}>8 WebMCP tools registered via <code style={{ background: "var(--s2)", padding: "1px 5px", borderRadius: 4, fontSize: 11 }}>navigator.modelContext</code></p>
+        </div>
+        <div style={{ display: "flex", gap: 8 }}>
+          <div style={{ background: "var(--gr-l)", color: "var(--gr)", borderRadius: 100, padding: "6px 14px", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", gap: 5 }}>
+            <span style={{ width: 7, height: 7, borderRadius: 100, background: "var(--gr)", display: "inline-block" }} />
+            8 tools active
+          </div>
+        </div>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: 20, alignItems: "start" }}>
+        {/* Left: tools + prompts */}
+        <div>
+          {/* Tool grid */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
+            {TOOLS.map((tool) => (
+              <div key={tool.name} style={{ background: "var(--s1)", border: "1px solid var(--bd)", borderRadius: 10, padding: "14px 16px", boxShadow: "var(--sh)" }}>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: 8, background: `${tool.color}14`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, color: tool.color, flexShrink: 0 }}>
+                    {tool.icon}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: "var(--mid)" }}>{tool.label}</span>
+                      <code style={{ fontSize: 10, background: "var(--s2)", color: "var(--slate)", padding: "1px 6px", borderRadius: 4, fontFamily: "monospace" }}>{tool.name}</code>
+                    </div>
+                    <div style={{ fontSize: 12, color: "var(--slate)", marginBottom: 8 }}>{tool.description}</div>
+                    <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+                      <div style={{ flex: 1, background: "var(--bg)", borderRadius: 6, padding: "6px 10px", fontFamily: "monospace", fontSize: 10, color: "var(--slate)", overflow: "hidden" }}>
+                        {tool.example}
+                      </div>
+                      <button
+                        onClick={() => copy(tool.example, tool.name)}
+                        style={{ background: copied === tool.name ? "var(--gr-l)" : "var(--bg)", border: "1px solid var(--bd)", borderRadius: 6, padding: "5px 10px", fontSize: 10, fontWeight: 700, cursor: "pointer", color: copied === tool.name ? "var(--gr)" : "var(--slate)", flexShrink: 0, fontFamily: "inherit" }}
+                      >
+                        {copied === tool.name ? "Copied!" : "Copy"}
+                      </button>
+                    </div>
+                    <div style={{ fontSize: 10, color: "var(--t3)", marginTop: 5 }}>Returns: <code style={{ fontFamily: "monospace", color: "var(--slate)" }}>{tool.returns}</code></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Example prompts */}
+          <div style={{ background: "var(--s1)", border: "1px solid var(--bd)", borderRadius: 12, padding: "18px 20px", boxShadow: "var(--sh)" }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "var(--mid)", marginBottom: 12 }}>Example prompts to try with any WebMCP-compatible AI</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              {PROMPTS.map((p, i) => (
+                <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", background: "var(--bg)", borderRadius: 7, border: "1px solid var(--bd)" }}>
+                  <div style={{ flex: 1, fontSize: 12, color: "var(--mid)" }}>{p}</div>
+                  <button
+                    onClick={() => copy(p, `prompt-${i}`)}
+                    style={{ background: copied === `prompt-${i}` ? "var(--gr-l)" : "var(--s1)", border: "1px solid var(--bd)", borderRadius: 6, padding: "4px 10px", fontSize: 10, fontWeight: 700, cursor: "pointer", color: copied === `prompt-${i}` ? "var(--gr)" : "var(--slate)", flexShrink: 0, fontFamily: "inherit" }}
+                  >
+                    {copied === `prompt-${i}` ? "✓" : "Copy"}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Right: health score + how it works */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          {/* Health score card */}
+          {health && (
+            <div style={{ background: "var(--s1)", border: "1px solid var(--bd)", borderRadius: 12, padding: "20px", boxShadow: "var(--sh)" }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "var(--mid)", marginBottom: 12 }}>Financial health score</div>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 12 }}>
+                <ScoreArc score={health.score} />
+                <div style={{ fontSize: 14, fontWeight: 800, color: ratingColor(health.rating), marginTop: 4 }}>{health.rating}</div>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {health.factors.map((f) => (
+                  <div key={f.name}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                      <span style={{ fontSize: 11, color: "var(--mid)", fontWeight: 600 }}>{f.name}</span>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: f.score >= 70 ? "var(--gr)" : f.score >= 40 ? "var(--gold)" : "var(--cr)" }}>{f.score}/100</span>
+                    </div>
+                    <div style={{ background: "var(--bd)", borderRadius: 100, height: 4 }}>
+                      <div style={{ width: `${f.score}%`, height: "100%", background: f.score >= 70 ? "var(--gr)" : f.score >= 40 ? "var(--gold)" : "var(--cr)", borderRadius: 100 }} />
+                    </div>
+                    <div style={{ fontSize: 10, color: "var(--steel)", marginTop: 3 }}>{f.note}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* How it works */}
+          <div style={{ background: "var(--s1)", border: "1px solid var(--bd)", borderRadius: 12, padding: "18px 20px", boxShadow: "var(--sh)" }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "var(--mid)", marginBottom: 12 }}>How it works</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {[
+                { step: "1", text: "FinSnapshot registers 8 tools on page load via navigator.modelContext.registerTool()" },
+                { step: "2", text: "A WebMCP-compatible AI (e.g. ChatGPT) detects the available tools automatically" },
+                { step: "3", text: "Ask any financial question — the AI calls the right tool, reads your real data, and answers" },
+                { step: "4", text: "All data stays in your browser's IndexedDB. Nothing leaves your device." },
+              ].map((s) => (
+                <div key={s.step} style={{ display: "flex", gap: 10 }}>
+                  <div style={{ width: 20, height: 20, borderRadius: 100, background: "var(--navy)", color: "#fff", fontSize: 10, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>{s.step}</div>
+                  <p style={{ fontSize: 12, color: "var(--slate)", margin: 0, lineHeight: 1.5 }}>{s.text}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

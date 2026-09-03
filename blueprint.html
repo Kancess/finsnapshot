@@ -1,0 +1,570 @@
+<title>FinSnapshot Blueprint</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f3ef;
+  --s1:#ffffff;
+  --s2:#edeae3;
+  --bd:#e0dbd1;
+  --navy:#103766;
+  --mid:#081e38;
+  --cr:#a63446;
+  --cr-l:#fdf0f2;
+  --gr:#1e8a56;
+  --gr-l:#e4f7ee;
+  --gold:#b8872a;
+  --gold-l:#fdf5dc;
+  --slate:#4b607d;
+  --steel:#8fa1b8;
+  --tx:#103766;
+  --t2:#4b607d;
+  --t3:#9daec2;
+  --sh:0 1px 3px rgba(16,55,102,.07),0 1px 2px rgba(16,55,102,.05);
+  --sh-md:0 4px 12px rgba(16,55,102,.08),0 2px 4px rgba(16,55,102,.05);
+  --fn:'Plus Jakarta Sans',system-ui,sans-serif;
+  --fn-m:'Plus Jakarta Sans',monospace;
+  --r:8px;
+}
+body{background:var(--bg);color:var(--tx);font-family:var(--fn);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.page{max-width:920px;margin:0 auto;padding:0 24px 100px}
+/* HEADER */
+.hd{padding:52px 0 40px;border-bottom:2px solid var(--bd);margin-bottom:56px}
+.hd-logo{font-size:clamp(42px,6vw,72px);font-weight:800;letter-spacing:-.04em;line-height:1;color:var(--mid)}
+.hd-logo em{font-style:normal;color:var(--cr)}
+.hd-sub{font-size:15px;color:var(--slate);margin-top:10px;line-height:1.55;max-width:520px;font-weight:400}
+/* SECTIONS */
+.sec{margin-bottom:64px}
+.sec-hd{display:flex;align-items:baseline;gap:10px;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--bd)}
+.sec-hd h2{font-size:18px;font-weight:700;color:var(--mid)}
+.sec-hd .tag{font-size:11px;color:var(--steel);font-weight:500;letter-spacing:.04em}
+/* PITCH CARDS */
+.pitch{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.pc{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:20px;box-shadow:var(--sh)}
+.pc .lbl{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
+.pc p{font-size:13px;color:var(--slate);line-height:1.65}
+/* ARCH */
+.arch-wrap{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:28px 24px;box-shadow:var(--sh);overflow-x:auto}
+.arch-wrap svg{display:block;max-width:100%;height:auto}
+figcaption{margin-top:14px;font-size:12px;color:var(--steel);line-height:1.6}
+figcaption code{font-family:var(--fn-m);font-size:11px;color:var(--cr);background:var(--cr-l);padding:1px 5px;border-radius:3px}
+/* DATA MODEL */
+.dm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.ent{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)}
+.ent-hd{padding:10px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px}
+.ent-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.ent-nm{font-size:12px;font-weight:700;color:var(--mid)}
+.ent-body{padding:10px 14px;display:flex;flex-direction:column;gap:5px}
+.fld{display:flex;gap:8px;font-size:11px;align-items:baseline}
+.fn{color:var(--slate);font-weight:500}.ft{color:var(--steel)}.fk{font-size:9px;font-weight:700;color:var(--cr)}.fkc{font-size:9px;color:var(--gr);font-weight:500}
+/* WIREFRAMES */
+.wf-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.wf-wrap{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)}
+.wf-title{padding:9px 14px;font-size:11px;color:var(--steel);border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;background:var(--bg);font-weight:500}
+.wf-title strong{color:var(--navy);font-weight:700}
+.wf-screen{display:flex;height:230px}
+.wf-nav{width:42px;background:var(--mid);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:12px;flex-shrink:0}
+.nd{width:20px;height:20px;border-radius:5px;background:rgba(255,255,255,.15)}
+.nd.a{background:var(--cr)}
+.nd.ap{background:rgba(255,255,255,.4)}
+.wf-body{flex:1;background:var(--bg);padding:10px;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+.wf-row{display:flex;gap:7px;align-items:center}
+.tile{background:var(--s1);border:1px solid var(--bd);border-radius:6px;flex:1;padding:7px 10px;min-height:48px;box-shadow:var(--sh)}
+.tile .t-lbl{font-size:8px;color:var(--steel);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;font-weight:600}
+.tile .t-val{font-size:15px;font-weight:800;line-height:1.1;color:var(--mid)}
+.tile .t-sub{font-size:8px;margin-top:2px;font-weight:600}
+.chart{background:var(--s1);border:1px solid var(--bd);border-radius:6px;flex:1;overflow:hidden;position:relative;min-height:52px;box-shadow:var(--sh)}
+.list{background:var(--s1);border:1px solid var(--bd);border-radius:6px;flex:1;overflow:hidden;box-shadow:var(--sh)}
+.lr{padding:5px 8px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:5px;font-size:8px;color:var(--slate)}
+.lr:last-child{border-bottom:none}
+.chip{border-radius:100px;padding:2px 6px;font-size:7px;font-weight:700}
+.chip.gr{background:var(--gr-l);color:var(--gr)}
+.chip.am{background:var(--gold-l);color:var(--gold)}
+.chip.rd{background:var(--cr-l);color:var(--cr)}
+.chip.bl{background:#e8f0f8;color:var(--navy)}
+.chip.v{background:var(--gold-l);color:var(--gold)}
+.chip.pk{background:var(--cr-l);color:var(--cr)}
+.bar-row{display:flex;align-items:center;gap:5px;padding:4px 8px;border-bottom:1px solid var(--bd);font-size:8px}
+.bar-row:last-child{border-bottom:none}
+.bar-track{flex:1;height:4px;background:var(--bd);border-radius:2px;overflow:hidden}
+.bar-fill{height:100%;border-radius:2px}
+.amt{font-size:8px;color:var(--slate);flex-shrink:0;width:44px;text-align:right;font-weight:600}
+.cat{width:60px;flex-shrink:0;color:var(--slate);font-size:8px}
+.btn-sm{border-radius:100px;padding:4px 9px;font-size:8px;font-weight:700;background:var(--cr);color:#fff;white-space:nowrap;border:none}
+.input-sm{background:var(--bg);border:1px solid var(--bd);border-radius:100px;height:22px;flex:1;font-size:8px;padding:0 8px;color:var(--slate)}
+.donut-legend{display:flex;flex-direction:column;gap:3px}
+.dl{display:flex;align-items:center;gap:4px;font-size:8px;color:var(--slate)}
+.dl-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+/* TOOLS */
+.tools-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tc{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:16px;box-shadow:var(--sh)}
+.tc-name{font-size:12px;font-weight:700;color:var(--cr);margin-bottom:4px;font-family:var(--fn-m)}
+.tc-desc{font-size:12px;color:var(--slate);line-height:1.55;margin-bottom:10px}
+.tc-pills{display:flex;gap:5px;flex-wrap:wrap}
+.pill{font-size:9px;padding:2px 7px;border-radius:4px;font-weight:600}
+.pill.in{background:var(--gold-l);color:var(--gold)}
+.pill.out{background:#e8f0f8;color:var(--navy)}
+.pill.opt{opacity:.6}
+/* BUILD STEPS */
+.steps{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)}
+.step{display:flex;align-items:flex-start;gap:14px;padding:16px 20px;border-bottom:1px solid var(--bd)}
+.step:last-child{border-bottom:none}
+.sn{font-size:11px;color:var(--steel);width:20px;flex-shrink:0;margin-top:2px;font-weight:700}
+.sb{flex:1}.st{font-weight:700;font-size:13px;color:var(--mid);margin-bottom:2px}.sd{font-size:12px;color:var(--slate)}
+.stime{font-size:11px;color:var(--steel);flex-shrink:0;margin-top:3px;font-weight:600}
+@media(max-width:640px){.pitch,.dm-grid,.wf-grid,.tools-grid{grid-template-columns:1fr}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+</style>
+
+<body><div class="page">
+
+<!-- HEADER -->
+<header class="hd">
+  <div class="hd-logo">Fin<em>Snap</em>shot</div>
+  <div class="hd-sub">Design blueprint — architecture, data model, screen wireframes, and WebMCP tool specs.</div>
+</header>
+
+<!-- PITCH -->
+<section class="sec">
+  <div class="sec-hd"><h2>What we're building</h2><span class="tag">positioning</span></div>
+  <div class="pitch">
+    <div class="pc">
+      <div class="lbl" style="color:var(--gold)">The problem</div>
+      <p>Finances are fragmented across five apps that show you data but can't reason over it. You open each one, do the maths yourself, and still can't answer "can I afford a holiday next month?"</p>
+    </div>
+    <div class="pc">
+      <div class="lbl" style="color:var(--navy)">The fix</div>
+      <p>Upload your bank statements. Set category rules once. Your full financial picture lives in one place — and because it's WebMCP-enabled, any AI agent can query it as structured data and actually answer real questions with your real numbers.</p>
+    </div>
+    <div class="pc">
+      <div class="lbl" style="color:var(--gr)">The gap we fill</div>
+      <p>Monarch, Copilot, Empower — none expose WebMCP tools. FinSnapshot is the first financial dashboard where your agent calls typed, schema-validated functions rather than scraping HTML. That's the differentiator.</p>
+    </div>
+  </div>
+</section>
+
+<!-- DESIGN DECISIONS -->
+<section class="sec">
+  <div class="sec-hd"><h2>Three design decisions</h2><span class="tag">answered upfront</span></div>
+  <div class="pitch">
+    <div class="pc">
+      <div class="lbl" style="color:var(--gold)">Where data comes from</div>
+      <p>No banking API. Every Australian bank exports CSV — CommBank, NAB, Westpac, ANZ, ING. Upload per account. Loans, property, and super: enter a current balance manually. No Plaid, no OAuth, no approval wait.</p>
+    </div>
+    <div class="pc">
+      <div class="lbl" style="color:var(--navy)">Where data lives</div>
+      <p>IndexedDB in the browser. No backend, nothing to deploy beyond the Next.js app. Survives page reloads, handles 100k+ transactions. Data never leaves the user's machine — a real privacy advantage over every SaaS competitor.</p>
+    </div>
+    <div class="pc">
+      <div class="lbl" style="color:var(--gr)">Categories and cashflow</div>
+      <p>Categories are SET by the user via rules, not guessed from bank strings. App ships with 15 defaults. Rules map description patterns to categories. Cashflow is 100% derived from categorised transactions — never separate data entry.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section class="sec">
+  <div class="sec-hd"><h2>Architecture</h2><span class="tag">data flow</span></div>
+  <div class="arch-wrap">
+    <figure>
+      <svg viewBox="0 0 760 548" role="img" aria-label="Data flow: bank CSV and manual entry flow through parse and categorise into IndexedDB, then via query engine to UI screens and the WebMCP tool layer" xmlns="http://www.w3.org/2000/svg" style="font-family:'Plus Jakarta Sans',sans-serif">
+        <defs>
+          <marker id="ah" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#9daec2"/></marker>
+          <marker id="ah-g" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#b8872a"/></marker>
+          <marker id="ah-n" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#103766"/></marker>
+          <marker id="ah-cr" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#a63446"/></marker>
+          <marker id="ah-gr" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#1e8a56"/></marker>
+        </defs>
+
+        <!-- LAYER LABELS -->
+        <text x="8" y="52"  font-size="9" fill="#9daec2" letter-spacing="1" writing-mode="tb" font-weight="600">SOURCES</text>
+        <text x="8" y="178" font-size="9" fill="#9daec2" letter-spacing="1" writing-mode="tb" font-weight="600">PROCESS</text>
+        <text x="8" y="312" font-size="9" fill="#9daec2" letter-spacing="1" writing-mode="tb" font-weight="600">STORE</text>
+        <text x="8" y="410" font-size="9" fill="#9daec2" letter-spacing="1" writing-mode="tb" font-weight="600">COMPUTE</text>
+        <text x="8" y="500" font-size="9" fill="#9daec2" letter-spacing="1" writing-mode="tb" font-weight="600">EXPOSE</text>
+
+        <!-- ROW 1: SOURCES -->
+        <rect x="32" y="22" width="200" height="46" rx="8" fill="#fdf5dc" stroke="#b8872a" stroke-width="1.5"/>
+        <text x="132" y="41" font-size="11" fill="#8a6018" text-anchor="middle" font-weight="700">Bank Statement</text>
+        <text x="132" y="56" font-size="9" fill="#b8872a" text-anchor="middle">CSV / OFX upload</text>
+
+        <rect x="270" y="22" width="200" height="46" rx="8" fill="#fdf5dc" stroke="#b8872a" stroke-width="1.5"/>
+        <text x="370" y="41" font-size="11" fill="#8a6018" text-anchor="middle" font-weight="700">Manual Transaction</text>
+        <text x="370" y="56" font-size="9" fill="#b8872a" text-anchor="middle">Cash · one-off entries</text>
+
+        <rect x="508" y="22" width="222" height="46" rx="8" fill="#fdf5dc" stroke="#b8872a" stroke-width="1.5"/>
+        <text x="619" y="41" font-size="11" fill="#8a6018" text-anchor="middle" font-weight="700">Account Setup</text>
+        <text x="619" y="56" font-size="9" fill="#b8872a" text-anchor="middle">Loans · property · super</text>
+
+        <!-- ROW 2: PROCESSING -->
+        <rect x="32" y="116" width="200" height="46" rx="8" fill="#fff" stroke="#a63446" stroke-width="1.5"/>
+        <text x="132" y="135" font-size="11" fill="#a63446" text-anchor="middle" font-weight="700">CSV Parser</text>
+        <text x="132" y="150" font-size="9" fill="#c06070" text-anchor="middle">Format detect · dedup</text>
+
+        <rect x="270" y="116" width="200" height="46" rx="8" fill="#fff" stroke="#a63446" stroke-width="1.5"/>
+        <text x="370" y="135" font-size="11" fill="#a63446" text-anchor="middle" font-weight="700">Category Rules Engine</text>
+        <text x="370" y="150" font-size="9" fill="#c06070" text-anchor="middle">Pattern → category</text>
+
+        <rect x="508" y="116" width="222" height="46" rx="8" fill="#fff" stroke="#8fa1b8" stroke-width="1" stroke-dasharray="5,3"/>
+        <text x="619" y="135" font-size="11" fill="#4b607d" text-anchor="middle" font-weight="700">Review Queue</text>
+        <text x="619" y="150" font-size="9" fill="#8fa1b8" text-anchor="middle">Unmatched → user assigns</text>
+
+        <!-- ROW 3: STORAGE -->
+        <rect x="140" y="232" width="480" height="48" rx="8" fill="#e8f0f8" stroke="#103766" stroke-width="1.5"/>
+        <text x="380" y="252" font-size="11" fill="#103766" text-anchor="middle" font-weight="700">IndexedDB — Browser Local</text>
+        <text x="380" y="267" font-size="9" fill="#4b607d" text-anchor="middle">accounts · transactions · categories · rules · goals</text>
+
+        <!-- ROW 4: QUERY ENGINE -->
+        <rect x="255" y="340" width="250" height="44" rx="8" fill="#fff" stroke="#4b607d" stroke-width="1.5"/>
+        <text x="380" y="359" font-size="11" fill="#4b607d" text-anchor="middle" font-weight="700">Query Engine</text>
+        <text x="380" y="374" font-size="9" fill="#8fa1b8" text-anchor="middle">Computed on demand — never stored</text>
+
+        <!-- ROW 5: CONSUMPTION -->
+        <rect x="32" y="440" width="280" height="48" rx="8" fill="#e4f7ee" stroke="#1e8a56" stroke-width="1.5"/>
+        <text x="172" y="460" font-size="11" fill="#1e8a56" text-anchor="middle" font-weight="700">UI Screens</text>
+        <text x="172" y="475" font-size="9" fill="#3aaa74" text-anchor="middle">Dashboard · Tx · Budget · Cashflow · Portfolio</text>
+
+        <rect x="448" y="432" width="282" height="64" rx="8" fill="#fdf0f2" stroke="#a63446" stroke-width="1.5"/>
+        <text x="589" y="455" font-size="11" fill="#a63446" text-anchor="middle" font-weight="700">WebMCP Tool Layer</text>
+        <text x="589" y="470" font-size="9" fill="#c06070" text-anchor="middle">8 typed tools · navigator.modelContext</text>
+        <text x="589" y="484" font-size="9" fill="#d4959f" text-anchor="middle">runs in-page · inherits session</text>
+
+        <!-- AI AGENT -->
+        <rect x="498" y="514" width="182" height="34" rx="8" fill="#fff" stroke="#a63446" stroke-width="1" stroke-dasharray="5,3"/>
+        <text x="589" y="532" font-size="11" fill="#a63446" text-anchor="middle" font-weight="600">AI Agent (ChatGPT · Chrome)</text>
+
+        <!-- ARROWS -->
+        <line x1="132" y1="68" x2="132" y2="114" stroke="#9daec2" stroke-width="1.5" marker-end="url(#ah)"/>
+        <line x1="232" y1="139" x2="268" y2="139" stroke="#a63446" stroke-width="1.5" marker-end="url(#ah-cr)"/>
+        <text x="250" y="134" font-size="8" fill="#a63446" text-anchor="middle" font-weight="600">rows</text>
+        <line x1="470" y1="139" x2="506" y2="139" stroke="#9daec2" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#ah)"/>
+        <text x="488" y="134" font-size="8" fill="#8fa1b8" text-anchor="middle">unmatched</text>
+        <path d="M370,162 Q370,196 310,230" fill="none" stroke="#a63446" stroke-width="1.5" marker-end="url(#ah-cr)"/>
+        <text x="322" y="202" font-size="8" fill="#a63446" text-anchor="middle" font-weight="600">matched</text>
+        <path d="M619,162 Q619,196 520,230" fill="none" stroke="#9daec2" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#ah)"/>
+        <text x="596" y="210" font-size="8" fill="#8fa1b8" text-anchor="middle">assigned</text>
+        <path d="M370,68 Q370,150 380,230" fill="none" stroke="#9daec2" stroke-width="1.5" marker-end="url(#ah)"/>
+        <path d="M619,68 Q680,150 580,230" fill="none" stroke="#9daec2" stroke-width="1.5" marker-end="url(#ah)"/>
+        <line x1="380" y1="280" x2="380" y2="338" stroke="#103766" stroke-width="1.5" marker-end="url(#ah-n)"/>
+        <path d="M310,384 Q240,415 172,438" fill="none" stroke="#1e8a56" stroke-width="1.5" marker-end="url(#ah-gr)"/>
+        <path d="M450,384 Q510,408 542,430" fill="none" stroke="#a63446" stroke-width="1.5" marker-end="url(#ah-cr)"/>
+        <line x1="589" y1="496" x2="589" y2="512" stroke="#a63446" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#ah-cr)"/>
+      </svg>
+      <figcaption>
+        CSV statements go through the parser and rules engine. Matched transactions land in IndexedDB immediately; unmatched go to a Review Queue where the user assigns a category and can save it as a rule. Manual transactions and account balances skip parsing entirely. The Query Engine reads IndexedDB on demand — nothing computed is stored. WebMCP tools are the Query Engine surfaced as typed functions via <code>navigator.modelContext</code>.
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- DATA MODEL -->
+<section class="sec">
+  <div class="sec-hd"><h2>Data model</h2><span class="tag">IndexedDB schema · 5 stores</span></div>
+  <div class="dm-grid">
+    <div class="ent">
+      <div class="ent-hd"><div class="ent-dot" style="background:var(--gold)"></div><div class="ent-nm">accounts</div></div>
+      <div class="ent-body">
+        <div class="fld"><span class="fn">id</span><span class="ft">string</span><span class="fk">PK</span></div>
+        <div class="fld"><span class="fn">name</span><span class="ft">string</span></div>
+        <div class="fld"><span class="fn">type</span><span class="ft">checking|savings|credit|loan|investment|super|property</span></div>
+        <div class="fld"><span class="fn">institution</span><span class="ft">string</span></div>
+        <div class="fld"><span class="fn">manual_balance</span><span class="ft">number</span></div>
+        <div class="fld"><span class="fn">currency</span><span class="ft">string</span></div>
+      </div>
+    </div>
+    <div class="ent">
+      <div class="ent-hd"><div class="ent-dot" style="background:var(--cr)"></div><div class="ent-nm">transactions</div></div>
+      <div class="ent-body">
+        <div class="fld"><span class="fn">id</span><span class="ft">string</span><span class="fk">PK</span></div>
+        <div class="fld"><span class="fn">account_id</span><span class="ft">string</span><span class="fk">FK</span></div>
+        <div class="fld"><span class="fn">date</span><span class="ft">string</span></div>
+        <div class="fld"><span class="fn">description</span><span class="ft">string</span></div>
+        <div class="fld"><span class="fn">amount</span><span class="ft">number</span></div>
+        <div class="fld"><span class="fn">category_id</span><span class="ft">string?</span><span class="fk">FK</span></div>
+        <div class="fld"><span class="fn">source</span><span class="ft">csv|manual</span></div>
+      </div>
+    </div>
+    <div class="ent">
+      <div class="ent-hd"><div class="ent-dot" style="background:var(--gr)"></div><div class="ent-nm">categories</div></div>
+      <div class="ent-body">
+        <div class="fld"><span class="fn">id</span><span class="ft">string</span><span class="fk">PK</span></div>
+        <div class="fld"><span class="fn">name</span><span class="ft">string</span></div>
+        <div class="fld"><span class="fn">type</span><span class="ft">income|expense|transfer</span></div>
+        <div class="fld"><span class="fn">colour</span><span class="ft">string</span></div>
+        <div class="fld"><span class="fn">budget_monthly</span><span class="ft">number?</span></div>
+      </div>
+    </div>
+    <div class="ent">
+      <div class="ent-hd"><div class="ent-dot" style="background:var(--navy)"></div><div class="ent-nm">category_rules</div></div>
+      <div class="ent-body">
+        <div class="fld"><span class="fn">id</span><span class="ft">string</span><span class="fk">PK</span></div>
+        <div class="fld"><span class="fn">pattern</span><span class="ft">string (regex)</span></div>
+        <div class="fld"><span class="fn">category_id</span><span class="ft">string</span><span class="fk">FK</span></div>
+        <div class="fld"><span class="fn">priority</span><span class="ft">number</span></div>
+        <div class="fld" style="margin-top:4px"><span class="fkc">runs on every import and "re-run rules"</span></div>
+      </div>
+    </div>
+    <div class="ent">
+      <div class="ent-hd"><div class="ent-dot" style="background:var(--cr)"></div><div class="ent-nm">goals</div></div>
+      <div class="ent-body">
+        <div class="fld"><span class="fn">id</span><span class="ft">string</span><span class="fk">PK</span></div>
+        <div class="fld"><span class="fn">name</span><span class="ft">string</span></div>
+        <div class="fld"><span class="fn">target_amount</span><span class="ft">number</span></div>
+        <div class="fld"><span class="fn">target_date</span><span class="ft">string</span></div>
+        <div class="fld"><span class="fn">account_id</span><span class="ft">string?</span><span class="fk">FK</span></div>
+      </div>
+    </div>
+    <div class="ent" style="background:var(--gr-l);border-color:rgba(30,138,86,.25)">
+      <div class="ent-hd" style="border-color:rgba(30,138,86,.2)"><div class="ent-dot" style="background:var(--gr)"></div><div class="ent-nm" style="color:var(--gr)">computed (never stored)</div></div>
+      <div class="ent-body">
+        <div class="fld"><span class="fkc">net_worth = Σ account balances</span></div>
+        <div class="fld"><span class="fkc">cashflow = GROUP tx by month · type</span></div>
+        <div class="fld"><span class="fkc">spending = FILTER + GROUP by cat</span></div>
+        <div class="fld"><span class="fkc">savings_rate = (inc – exp) / inc</span></div>
+        <div class="fld"><span class="fkc">recurring = detect repeating tx</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SCREENS -->
+<section class="sec">
+  <div class="sec-hd"><h2>Screens</h2><span class="tag">7 screens · persistent sidebar nav</span></div>
+  <div class="wf-grid">
+
+    <!-- DASHBOARD -->
+    <div class="wf-wrap">
+      <div class="wf-title"><strong>Dashboard</strong><span>primary view</span></div>
+      <div class="wf-screen">
+        <div class="wf-nav"><div class="nd a"></div><div class="nd"></div><div class="nd"></div><div class="nd"></div><div class="nd"></div><div class="nd"></div><div class="nd ap"></div></div>
+        <div class="wf-body">
+          <div class="wf-row">
+            <div class="tile"><div class="t-lbl">Net Worth</div><div class="t-val">$698k</div><div class="t-sub" style="color:var(--gr)">+$12k this month</div></div>
+            <div class="tile"><div class="t-lbl">Savings Rate</div><div class="t-val">22%</div><div class="t-sub" style="color:var(--gr)">↑ 3% vs last</div></div>
+            <div class="tile"><div class="t-lbl">Budget</div><div class="t-val">7/9</div><div class="t-sub" style="color:var(--cr)">2 over limit</div></div>
+          </div>
+          <div class="wf-row" style="flex:1">
+            <div class="chart" style="flex:2">
+              <svg viewBox="0 0 160 52" width="100%" height="100%" preserveAspectRatio="none">
+                <polyline points="10,40 36,32 62,22 88,36 114,18 140,24" fill="none" stroke="#1e8a56" stroke-width="2"/>
+                <polyline points="10,44 36,38 62,34 88,42 114,30 140,36" fill="none" stroke="#a63446" stroke-width="2" stroke-dasharray="3,2"/>
+                <circle cx="140" cy="24" r="3" fill="#1e8a56"/>
+                <circle cx="140" cy="36" r="3" fill="#a63446"/>
+              </svg>
+            </div>
+            <div class="list" style="flex:1">
+              <div class="lr"><div class="chip gr">Income</div><span style="margin-left:auto;color:var(--gr);font-weight:700">+$4,833</span></div>
+              <div class="lr"><div class="chip am">Groceries</div><span style="margin-left:auto">$436</span></div>
+              <div class="lr"><div class="chip rd">Dining</div><span style="margin-left:auto">$291</span></div>
+              <div class="lr"><div class="chip bl">Mortgage</div><span style="margin-left:auto">$2,150</span></div>
+            </div>
+          </div>
+          <div style="background:var(--cr-l);border:1px solid rgba(166,52,70,.2);border-radius:6px;padding:5px 8px;display:flex;align-items:center;gap:6px">
+            <span style="font-size:8px;color:var(--cr);flex:1;font-weight:500">Agent: Dining up 38% vs monthly average — $291 vs $211</span>
+            <div class="chip pk" style="cursor:pointer">ask agent</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRANSACTIONS -->
+    <div class="wf-wrap">
+      <div class="wf-title"><strong>Transactions</strong><span>import · categorise · review</span></div>
+      <div class="wf-screen">
+        <div class="wf-nav"><div class="nd"></div><div class="nd a"></div><div class="nd"></div><div class="nd"></div><div class="nd"></div><div class="nd"></div><div class="nd ap"></div></div>
+        <div class="wf-body">
+          <div class="wf-row">
+            <div class="input-sm" style="display:flex;align-items:center;color:var(--t3)">Search…</div>
+            <div class="chip bl" style="padding:3px 8px;border-radius:100px;font-size:7px">All accounts</div>
+            <div class="btn-sm" style="margin-left:auto">↑ Upload CSV</div>
+          </div>
+          <div style="background:var(--gold-l);border:1px solid rgba(184,135,42,.25);border-radius:6px;padding:5px 8px;font-size:8px;color:var(--gold);font-weight:600">4 transactions uncategorised — tap to review</div>
+          <div class="list" style="flex:1">
+            <div class="lr"><span style="color:var(--t3);width:46px;font-size:7px">03 Sep</span><span style="flex:1;font-weight:500">Salary — Versent</span><div class="chip gr">Income</div><span style="color:var(--gr);margin-left:auto;font-weight:700">+$4,833</span></div>
+            <div class="lr"><span style="color:var(--t3);width:46px;font-size:7px">03 Sep</span><span style="flex:1;font-weight:500">Coles Supermarket</span><div class="chip am">Groceries</div><span style="margin-left:auto">-$127</span></div>
+            <div class="lr"><span style="color:var(--t3);width:46px;font-size:7px">02 Sep</span><span style="flex:1;font-weight:500">Uber Eats — Thai</span><div class="chip rd">Dining</div><span style="margin-left:auto">-$42</span></div>
+            <div class="lr" style="background:var(--gold-l)"><span style="color:var(--t3);width:46px;font-size:7px">01 Sep</span><span style="flex:1;font-weight:500">SQ*MERCHANT 4829</span><div class="chip v">? uncategorised</div><span style="margin-left:auto">-$88</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACCOUNTS -->
+    <div class="wf-wrap">
+      <div class="wf-title"><strong>Accounts</strong><span>add · import · manage</span></div>
+      <div class="wf-screen">
+        <div class="wf-nav"><div class="nd"></div><div class="nd"></div><div class="nd a"></div><div class="nd"></div><div class="nd"></div><div class="nd"></div><div class="nd ap"></div></div>
+        <div class="wf-body">
+          <div class="wf-row">
+            <span style="font-size:9px;color:var(--slate);font-weight:600">6 accounts · $698k net worth</span>
+            <div class="btn-sm" style="margin-left:auto">+ Add account</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;flex:1">
+            <div class="tile" style="min-height:auto"><div class="t-lbl">CommBank Everyday</div><div class="t-val" style="font-size:13px">$12,450</div><div class="t-sub" style="color:var(--steel)">Checking · ↑ upload</div></div>
+            <div class="tile" style="min-height:auto"><div class="t-lbl">ING Savings</div><div class="t-val" style="font-size:13px">$28,900</div><div class="t-sub" style="color:var(--steel)">Savings · ↑ upload</div></div>
+            <div class="tile" style="min-height:auto"><div class="t-lbl">CommBank Credit</div><div class="t-val" style="font-size:13px;color:var(--cr)">-$2,340</div><div class="t-sub" style="color:var(--steel)">Credit · ↑ upload</div></div>
+            <div class="tile" style="min-height:auto"><div class="t-lbl">NAB Home Loan</div><div class="t-val" style="font-size:13px;color:var(--cr)">-$385k</div><div class="t-sub" style="color:var(--steel)">Loan · manual balance</div></div>
+            <div class="tile" style="min-height:auto"><div class="t-lbl">AustralianSuper</div><div class="t-val" style="font-size:13px">$89,400</div><div class="t-sub" style="color:var(--steel)">Super · manual</div></div>
+            <div class="tile" style="min-height:auto"><div class="t-lbl">Sydney Property</div><div class="t-val" style="font-size:13px">$920k</div><div class="t-sub" style="color:var(--steel)">Property · manual</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BUDGET -->
+    <div class="wf-wrap">
+      <div class="wf-title"><strong>Budget</strong><span>monthly limits · track spending</span></div>
+      <div class="wf-screen">
+        <div class="wf-nav"><div class="nd"></div><div class="nd"></div><div class="nd"></div><div class="nd a"></div><div class="nd"></div><div class="nd"></div><div class="nd ap"></div></div>
+        <div class="wf-body">
+          <div class="wf-row">
+            <span style="font-size:9px;color:var(--slate);font-weight:600">← Sep 2026 →</span>
+            <span style="font-size:8px;color:var(--gr);margin-left:auto;font-weight:700">$1,240 under overall</span>
+          </div>
+          <div class="list" style="flex:1">
+            <div class="bar-row"><span class="cat">Groceries</span><div class="bar-track"><div class="bar-fill" style="width:73%;background:var(--gr)"></div></div><span class="amt">$436/600</span></div>
+            <div class="bar-row"><span class="cat">Dining</span><div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--cr)"></div></div><span class="amt" style="color:var(--cr)">$291/250!</span></div>
+            <div class="bar-row"><span class="cat">Transport</span><div class="bar-track"><div class="bar-fill" style="width:56%;background:var(--gr)"></div></div><span class="amt">$167/300</span></div>
+            <div class="bar-row"><span class="cat">Shopping</span><div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--cr)"></div></div><span class="amt" style="color:var(--cr)">$505/500!</span></div>
+            <div class="bar-row"><span class="cat">Utilities</span><div class="bar-track"><div class="bar-fill" style="width:62%;background:var(--gold)"></div></div><span class="amt">$620/1000</span></div>
+            <div class="bar-row"><span class="cat">Health</span><div class="bar-track"><div class="bar-fill" style="width:26%;background:var(--gr)"></div></div><span class="amt">$79/300</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CASHFLOW -->
+    <div class="wf-wrap">
+      <div class="wf-title"><strong>Cashflow</strong><span>100% derived from transactions</span></div>
+      <div class="wf-screen">
+        <div class="wf-nav"><div class="nd"></div><div class="nd"></div><div class="nd"></div><div class="nd"></div><div class="nd a"></div><div class="nd"></div><div class="nd ap"></div></div>
+        <div class="wf-body">
+          <div class="wf-row">
+            <div class="tile"><div class="t-lbl">Avg Income</div><div class="t-val" style="font-size:13px">$6,131</div></div>
+            <div class="tile"><div class="t-lbl">Avg Expenses</div><div class="t-val" style="font-size:13px">$4,977</div></div>
+            <div class="tile"><div class="t-lbl">Savings Rate</div><div class="t-val" style="font-size:13px;color:var(--gr)">18.8%</div></div>
+          </div>
+          <div class="chart" style="flex:1;padding:8px">
+            <svg viewBox="0 0 280 80" width="100%" height="100%" preserveAspectRatio="none">
+              <rect x="10" y="20" width="14" height="45" fill="rgba(30,138,86,.35)" rx="2"/>
+              <rect x="26" y="28" width="14" height="37" fill="rgba(166,52,70,.25)" rx="2"/>
+              <rect x="56" y="22" width="14" height="43" fill="rgba(30,138,86,.35)" rx="2"/>
+              <rect x="72" y="24" width="14" height="41" fill="rgba(166,52,70,.25)" rx="2"/>
+              <rect x="102" y="10" width="14" height="55" fill="rgba(30,138,86,.35)" rx="2"/>
+              <rect x="118" y="20" width="14" height="45" fill="rgba(166,52,70,.25)" rx="2"/>
+              <rect x="148" y="22" width="14" height="43" fill="rgba(30,138,86,.35)" rx="2"/>
+              <rect x="164" y="30" width="14" height="35" fill="rgba(166,52,70,.25)" rx="2"/>
+              <rect x="194" y="18" width="14" height="47" fill="rgba(30,138,86,.35)" rx="2"/>
+              <rect x="210" y="26" width="14" height="39" fill="rgba(166,52,70,.25)" rx="2"/>
+              <rect x="240" y="24" width="14" height="41" fill="rgba(30,138,86,.35)" rx="2"/>
+              <rect x="256" y="32" width="14" height="33" fill="rgba(166,52,70,.25)" rx="2"/>
+              <text x="17" y="76" font-size="8" fill="#9daec2" text-anchor="middle">Apr</text>
+              <text x="79" y="76" font-size="8" fill="#9daec2" text-anchor="middle">May</text>
+              <text x="125" y="76" font-size="8" fill="#9daec2" text-anchor="middle">Jun</text>
+              <text x="171" y="76" font-size="8" fill="#9daec2" text-anchor="middle">Jul</text>
+              <text x="217" y="76" font-size="8" fill="#9daec2" text-anchor="middle">Aug</text>
+              <text x="263" y="76" font-size="8" fill="#9daec2" text-anchor="middle">Sep</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PORTFOLIO -->
+    <div class="wf-wrap">
+      <div class="wf-title"><strong>Portfolio</strong><span>holdings · allocation · gain</span></div>
+      <div class="wf-screen">
+        <div class="wf-nav"><div class="nd"></div><div class="nd"></div><div class="nd"></div><div class="nd"></div><div class="nd"></div><div class="nd a"></div><div class="nd ap"></div></div>
+        <div class="wf-body">
+          <div class="wf-row">
+            <span style="font-size:15px;font-weight:800;color:var(--mid)">$47,240</span>
+            <span style="font-size:9px;color:var(--gr);margin-left:8px;font-weight:700">+$6,395 total gain (15.7%)</span>
+          </div>
+          <div class="wf-row" style="flex:1;gap:10px">
+            <div style="display:flex;flex-direction:column;gap:6px;width:84px;flex-shrink:0;align-items:center;padding-top:4px">
+              <svg viewBox="0 0 60 60" width="60" height="60">
+                <circle cx="30" cy="30" r="22" fill="none" stroke="#1e8a56" stroke-width="10" stroke-dasharray="55 85"/>
+                <circle cx="30" cy="30" r="22" fill="none" stroke="#103766" stroke-width="10" stroke-dasharray="35 105" stroke-dashoffset="-55"/>
+                <circle cx="30" cy="30" r="22" fill="none" stroke="#b8872a" stroke-width="10" stroke-dasharray="28 112" stroke-dashoffset="-90"/>
+                <circle cx="30" cy="30" r="22" fill="none" stroke="#a63446" stroke-width="10" stroke-dasharray="20 120" stroke-dashoffset="-118"/>
+              </svg>
+              <div class="donut-legend">
+                <div class="dl"><div class="dl-dot" style="background:var(--gr)"></div>AU ETFs</div>
+                <div class="dl"><div class="dl-dot" style="background:var(--navy)"></div>Intl ETFs</div>
+                <div class="dl"><div class="dl-dot" style="background:var(--gold)"></div>AU shares</div>
+                <div class="dl"><div class="dl-dot" style="background:var(--cr)"></div>US shares</div>
+              </div>
+            </div>
+            <div class="list" style="flex:1">
+              <div class="lr"><span style="font-size:9px;font-weight:700;width:28px;color:var(--mid)">VAS</span><span style="flex:1;color:var(--slate)">Vanguard AU</span><span style="color:var(--gr);font-weight:700">+17.4%</span></div>
+              <div class="lr"><span style="font-size:9px;font-weight:700;width:28px;color:var(--mid)">VGS</span><span style="flex:1;color:var(--slate)">Vanguard Intl</span><span style="color:var(--gr);font-weight:700">+23.7%</span></div>
+              <div class="lr"><span style="font-size:9px;font-weight:700;width:28px;color:var(--mid)">BHP</span><span style="flex:1;color:var(--slate)">BHP Group</span><span style="color:var(--cr);font-weight:700">-3.6%</span></div>
+              <div class="lr"><span style="font-size:9px;font-weight:700;width:28px;color:var(--mid)">CSL</span><span style="flex:1;color:var(--slate)">CSL Limited</span><span style="color:var(--gr);font-weight:700">+21.1%</span></div>
+              <div class="lr"><span style="font-size:9px;font-weight:700;width:28px;color:var(--mid)">MSFT</span><span style="flex:1;color:var(--slate)">Microsoft</span><span style="color:var(--gr);font-weight:700">+27.5%</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI TOOLS — full width -->
+    <div class="wf-wrap" style="grid-column:1/-1">
+      <div class="wf-title"><strong>AI Tools (WebMCP)</strong><span>8 typed tools exposed via navigator.modelContext</span></div>
+      <div class="wf-screen" style="height:196px">
+        <div class="wf-nav"><div class="nd"></div><div class="nd"></div><div class="nd"></div><div class="nd"></div><div class="nd"></div><div class="nd"></div><div class="nd ap"></div></div>
+        <div class="wf-body">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="width:7px;height:7px;border-radius:50%;background:var(--gr);animation:pulse 2s infinite"></div>
+            <span style="font-size:9px;color:var(--gr);font-weight:700">WebMCP active — 8 tools registered</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;flex:1">
+            <div style="background:var(--cr-l);border:1px solid rgba(166,52,70,.2);border-radius:6px;padding:6px"><div style="font-size:9px;color:var(--cr);margin-bottom:2px;font-weight:700">get_net_worth</div><div style="font-size:8px;color:var(--slate)">assets · liabilities · net</div></div>
+            <div style="background:var(--cr-l);border:1px solid rgba(166,52,70,.2);border-radius:6px;padding:6px"><div style="font-size:9px;color:var(--cr);margin-bottom:2px;font-weight:700">get_accounts</div><div style="font-size:8px;color:var(--slate)">balances by type</div></div>
+            <div style="background:var(--cr-l);border:1px solid rgba(166,52,70,.2);border-radius:6px;padding:6px"><div style="font-size:9px;color:var(--cr);margin-bottom:2px;font-weight:700">get_transactions</div><div style="font-size:8px;color:var(--slate)">filtered · dated</div></div>
+            <div style="background:var(--cr-l);border:1px solid rgba(166,52,70,.2);border-radius:6px;padding:6px"><div style="font-size:9px;color:var(--cr);margin-bottom:2px;font-weight:700">get_spending</div><div style="font-size:8px;color:var(--slate)">category breakdown</div></div>
+            <div style="background:var(--cr-l);border:1px solid rgba(166,52,70,.2);border-radius:6px;padding:6px"><div style="font-size:9px;color:var(--cr);margin-bottom:2px;font-weight:700">get_cashflow</div><div style="font-size:8px;color:var(--slate)">monthly · trend</div></div>
+            <div style="background:var(--cr-l);border:1px solid rgba(166,52,70,.2);border-radius:6px;padding:6px"><div style="font-size:9px;color:var(--cr);margin-bottom:2px;font-weight:700">get_portfolio</div><div style="font-size:8px;color:var(--slate)">holdings · allocation</div></div>
+            <div style="background:var(--cr-l);border:1px solid rgba(166,52,70,.2);border-radius:6px;padding:6px"><div style="font-size:9px;color:var(--cr);margin-bottom:2px;font-weight:700">get_recurring</div><div style="font-size:8px;color:var(--slate)">subscriptions detected</div></div>
+            <div style="background:var(--cr-l);border:1px solid rgba(166,52,70,.2);border-radius:6px;padding:6px"><div style="font-size:9px;color:var(--cr);margin-bottom:2px;font-weight:700">get_health_score</div><div style="font-size:8px;color:var(--slate)">0–100 · factors</div></div>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;background:var(--s1);border:1px solid var(--bd);border-radius:6px;padding:6px 10px;box-shadow:var(--sh)">
+            <span style="font-size:8px;color:var(--steel);font-weight:600">Example:</span>
+            <span style="font-size:8px;color:var(--slate)">Am I spending too much on dining? Can I afford a $5k holiday this month?</span>
+            <div class="btn-sm" style="margin-left:auto">Open in ChatGPT →</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WEBMCP TOOL SPECS -->
+<section class="sec">
+  <div class="sec-hd"><h2>WebMCP tool specs</h2><span class="tag">8 tools · navigator.modelContext.registerTool()</span></div>
+  <div class="tools-grid">
+    <div class="tc"><div class="tc-name">get_net_worth</div><div class="tc-desc">Total assets, liabilities, net figure, and breakdown by type (cash, property, super, investments, debt). Agent can assess concentration and leverage without computing it.</div><div class="tc-pills"><span class="pill out">assets: number</span><span class="pill out">liabilities: number</span><span class="pill out">net_worth: number</span><span class="pill out">breakdown: array</span></div></div>
+    <div class="tc"><div class="tc-name">get_accounts</div><div class="tc-desc">All accounts with current balance, type, and institution. Optional type filter so the agent can ask for "only loans" without sifting everything.</div><div class="tc-pills"><span class="pill in opt">type?: enum</span><span class="pill out">accounts: Account[]</span></div></div>
+    <div class="tc"><div class="tc-name">get_transactions</div><div class="tc-desc">Recent transactions sorted by date desc. Filterable by account, category, date range, and amount — supports "show me my biggest expenses this month."</div><div class="tc-pills"><span class="pill in opt">category?: string</span><span class="pill in opt">days?: number</span><span class="pill in opt">min_amount?: number</span><span class="pill out">transactions: Tx[]</span></div></div>
+    <div class="tc"><div class="tc-name">get_spending_by_category</div><div class="tc-desc">Category breakdown for last N days. With compare_previous_period true, returns delta so the agent can flag "dining up 38% vs prior period" without doing the maths itself.</div><div class="tc-pills"><span class="pill in opt">days?: number</span><span class="pill in opt">compare_previous?: bool</span><span class="pill out">categories: array</span><span class="pill out">delta?: number</span></div></div>
+    <div class="tc"><div class="tc-name">get_cashflow</div><div class="tc-desc">Monthly income vs expenses for last N months. Returns avg savings rate and trend direction (improving / declining / stable) pre-computed so the agent doesn't have to.</div><div class="tc-pills"><span class="pill in opt">months?: number</span><span class="pill out">months: array</span><span class="pill out">avg_savings_rate: number</span><span class="pill out">trend: string</span></div></div>
+    <div class="tc"><div class="tc-name">get_portfolio</div><div class="tc-desc">Investment holdings with current value and gain/loss per holding. Includes allocation breakdown by asset class so the agent can assess diversification directly.</div><div class="tc-pills"><span class="pill in opt">sort_by?: enum</span><span class="pill out">holdings: array</span><span class="pill out">allocation: array</span><span class="pill out">total_gain_pct: number</span></div></div>
+    <div class="tc"><div class="tc-name">get_recurring_charges</div><div class="tc-desc">Detects repeating transactions over the last 90 days — subscriptions and regular bills — grouped with total monthly cost. Agent can flag cancellation candidates.</div><div class="tc-pills"><span class="pill out">subscriptions: array</span><span class="pill out">total_monthly: number</span></div></div>
+    <div class="tc"><div class="tc-name">get_financial_health_score</div><div class="tc-desc">Synthesises key signals into a 0–100 score with rating and factor breakdown — savings rate, emergency fund months, debt-to-income, portfolio diversification. The demo centrepiece: one call gives the agent a structured health picture to narrate.</div><div class="tc-pills"><span class="pill out">score: number</span><span class="pill out">rating: string</span><span class="pill out">factors: array</span></div></div>
+  </div>
+</section>
+
+<!-- BUILD ORDER -->
+<section class="sec">
+  <div class="sec-hd"><h2>Build order</h2><span class="tag">today</span></div>
+  <div class="steps">
+    <div class="step"><span class="sn">01</span><div class="sb"><div class="st">Layout + nav + IndexedDB + seed data</div><div class="sd">Sidebar nav, page routing, all 5 IndexedDB stores, seed with realistic AUD mock data so every screen has content immediately.</div></div><span class="stime">1.5 h</span></div>
+    <div class="step"><span class="sn">02</span><div class="sb"><div class="st">Accounts screen + CSV upload + parser</div><div class="sd">Account add flow (manual balance entry), CSV file picker, format detection for CommBank / NAB / Westpac / ANZ / ING, parse to transactions, dedup on import.</div></div><span class="stime">2 h</span></div>
+    <div class="step"><span class="sn">03</span><div class="sb"><div class="st">Transactions screen + categorisation + rules</div><div class="sd">Full transaction list with search and filters, category chip assignment, "save as rule" flow, Review Queue badge showing uncategorised count.</div></div><span class="stime">2 h</span></div>
+    <div class="step"><span class="sn">04</span><div class="sb"><div class="st">Dashboard + cashflow chart + spending breakdown</div><div class="sd">Net worth, savings rate, budget health metric tiles. 6-month cashflow chart (Recharts). Category spending list. All computed from IndexedDB on mount.</div></div><span class="stime">1.5 h</span></div>
+    <div class="step"><span class="sn">05</span><div class="sb"><div class="st">Budget screen + Portfolio screen</div><div class="sd">Budget: category rows with monthly cap inputs and progress bars. Portfolio: holdings table + allocation donut. Both read from IndexedDB.</div></div><span class="stime">1 h</span></div>
+    <div class="step"><span class="sn">06</span><div class="sb"><div class="st">WebMCP tool layer — all 8 tools</div><div class="sd">Register all 8 tools via navigator.modelContext.registerTool(). Each tool queries IndexedDB, computes the view, returns structured JSON. Gracefully no-ops when API is absent.</div></div><span class="stime">1 h</span></div>
+    <div class="step"><span class="sn">07</span><div class="sb"><div class="st">AI Tools screen + Vercel deploy + demo video</div><div class="sd">Active tool list, example prompts, "Open in ChatGPT" deep link. Deploy to Vercel. Record 3-min demo showing a real agent question answered with real data from the app.</div></div><span class="stime">1 h</span></div>
+  </div>
+</section>
+
+</div></body>
