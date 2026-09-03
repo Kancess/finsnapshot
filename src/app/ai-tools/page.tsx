@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { isSeeded } from "@/lib/db";
 import { seedDatabase } from "@/lib/seed";
 import { queryHealthScore } from "@/lib/queries";
@@ -8,7 +9,7 @@ import { queryHealthScore } from "@/lib/queries";
 interface HealthData {
   score: number;
   rating: string;
-  factors: { name: string; score: number; note: string }[];
+  factors: { name: string; score: number; max: number; note: string }[];
 }
 
 const TOOLS = [
@@ -196,6 +197,8 @@ function ScoreArc({ score }: { score: number }) {
 export default function AIToolsPage() {
   const [health, setHealth] = useState<HealthData | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const pendingQuestion = searchParams.get("q");
 
   useEffect(() => {
     (async () => {
@@ -229,6 +232,26 @@ export default function AIToolsPage() {
           </div>
         </div>
       </div>
+
+      {/* Pending question from sidebar prompt */}
+      {pendingQuestion && (
+        <div style={{ background: "rgba(16,55,102,.07)", border: "1px solid rgba(16,55,102,.18)", borderRadius: 10, padding: "14px 18px", marginBottom: 20, display: "flex", alignItems: "flex-start", gap: 14 }}>
+          <div style={{ fontSize: 16, flexShrink: 0 }}>💬</div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#103766", letterSpacing: ".06em", textTransform: "uppercase", marginBottom: 6 }}>Your question</div>
+            <div style={{ fontSize: 14, color: "var(--mid)", fontWeight: 500, marginBottom: 10, fontStyle: "italic" }}>"{pendingQuestion}"</div>
+            <div style={{ fontSize: 12, color: "var(--steel)", lineHeight: 1.55 }}>
+              Open this page in <strong>ChatGPT</strong> (Work plan → in-app browser) or <strong>Chrome</strong> with <code style={{ fontSize: 10, background: "var(--s2)", padding: "1px 4px", borderRadius: 3 }}>chrome://flags/#enable-webmcp-testing</code> enabled, then paste the question above. The AI will call FinSnapshot's tools automatically.
+            </div>
+          </div>
+          <button
+            onClick={() => copy(pendingQuestion, "pending-q")}
+            style={{ background: copied === "pending-q" ? "rgba(30,138,86,.15)" : "var(--s1)", border: "1px solid var(--bd)", borderRadius: 7, padding: "7px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer", color: copied === "pending-q" ? "var(--gr)" : "var(--mid)", flexShrink: 0, fontFamily: "inherit" }}
+          >
+            {copied === "pending-q" ? "Copied!" : "Copy question"}
+          </button>
+        </div>
+      )}
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: 20, alignItems: "start" }}>
         {/* Left: tools + prompts */}
@@ -295,18 +318,22 @@ export default function AIToolsPage() {
                 <div style={{ fontSize: 14, fontWeight: 800, color: ratingColor(health.rating), marginTop: 4 }}>{health.rating}</div>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {health.factors.map((f) => (
-                  <div key={f.name}>
-                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                      <span style={{ fontSize: 11, color: "var(--mid)", fontWeight: 600 }}>{f.name}</span>
-                      <span style={{ fontSize: 11, fontWeight: 700, color: f.score >= 70 ? "var(--gr)" : f.score >= 40 ? "var(--gold)" : "var(--cr)" }}>{f.score}/100</span>
+                {health.factors.map((f) => {
+                  const pct = f.max > 0 ? Math.round((f.score / f.max) * 100) : 0;
+                  const col = pct >= 80 ? "var(--gr)" : pct >= 50 ? "var(--gold)" : "var(--cr)";
+                  return (
+                    <div key={f.name}>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                        <span style={{ fontSize: 11, color: "var(--mid)", fontWeight: 600 }}>{f.name}</span>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: col }}>{f.score}/{f.max} pts</span>
+                      </div>
+                      <div style={{ background: "var(--bd)", borderRadius: 100, height: 4 }}>
+                        <div style={{ width: `${pct}%`, height: "100%", background: col, borderRadius: 100 }} />
+                      </div>
+                      <div style={{ fontSize: 10, color: "var(--steel)", marginTop: 3 }}>{f.note}</div>
                     </div>
-                    <div style={{ background: "var(--bd)", borderRadius: 100, height: 4 }}>
-                      <div style={{ width: `${f.score}%`, height: "100%", background: f.score >= 70 ? "var(--gr)" : f.score >= 40 ? "var(--gold)" : "var(--cr)", borderRadius: 100 }} />
-                    </div>
-                    <div style={{ fontSize: 10, color: "var(--steel)", marginTop: 3 }}>{f.note}</div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
@@ -343,7 +370,7 @@ export default function AIToolsPage() {
                 { step: "1", text: "Enable chrome://flags/#enable-webmcp-testing in Chrome, or use ChatGPT's in-app browser." },
                 { step: "2", text: "FinSnapshot's 14 tools are auto-registered on document.modelContext when the page loads." },
                 { step: "3", text: "Ask any financial question — the AI calls the right tool, reads your real data, and answers." },
-                { step: "4", text: "All data stays in your browser's IndexedDB. Nothing leaves your device." },
+                { step: "4", text: "Your financial data lives in your browser's IndexedDB. Tool calls go directly from the AI to your page's JavaScript — no backend, no server, no third-party." },
               ].map((s) => (
                 <div key={s.step} style={{ display: "flex", gap: 10 }}>
                   <div style={{ width: 20, height: 20, minWidth: 20, borderRadius: 100, background: "var(--navy)", color: "#fff", fontSize: 10, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>{s.step}</div>

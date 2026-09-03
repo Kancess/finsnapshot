@@ -40,7 +40,7 @@ function statusColour(pct: number, expected: number, days: number): string {
 function statusLabel(pct: number, expected: number, days: number): { text: string; bg: string; colour: string } {
   if (days < 0) return { text: "Overdue", bg: "rgba(166,52,70,.12)", colour: "#a63446" };
   if (pct >= 100) return { text: "Complete", bg: "rgba(30,138,86,.12)", colour: "#1e8a56" };
-  if (pct === 0) return { text: "Just started", bg: "rgba(16,55,102,.1)", colour: "#103766" };
+  if (pct === 0 && expected === 0) return { text: "Just started", bg: "rgba(16,55,102,.1)", colour: "#103766" };
   if (pct >= expected) return { text: "On track", bg: "rgba(30,138,86,.12)", colour: "#1e8a56" };
   if (pct < expected - 15) return { text: "Behind", bg: "rgba(184,135,42,.12)", colour: "#b8872a" };
   return { text: "On track", bg: "rgba(30,138,86,.12)", colour: "#1e8a56" };

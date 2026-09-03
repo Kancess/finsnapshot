@@ -99,7 +99,7 @@ export function getDB() {
   return dbPromise;
 }
 
-const SEED_VERSION = "v3";
+const SEED_VERSION = "v4";
 
 export async function isSeeded(): Promise<boolean> {
   const db = await getDB();

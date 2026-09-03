@@ -45,7 +45,7 @@ const accounts: Account[] = [
   { id: "ing-savings",  name: "ING Savings Maximiser", type: "savings",    institution: "ING",               manual_balance: 28900,   currency: "AUD", created_at: now.toISOString() },
   { id: "cba-credit",   name: "CommBank Credit Card",  type: "credit",     institution: "Commonwealth Bank", manual_balance: -2340,   currency: "AUD", created_at: now.toISOString() },
   { id: "nab-homeloan", name: "NAB Home Loan",         type: "loan",       institution: "NAB",               manual_balance: -385000, currency: "AUD", created_at: now.toISOString() },
-  { id: "commsec",      name: "CommSec Brokerage",     type: "investment", institution: "CommSec",           manual_balance: 34750,   currency: "AUD", created_at: now.toISOString() },
+  { id: "commsec",      name: "CommSec Brokerage",     type: "investment", institution: "CommSec",           manual_balance: 47240,   currency: "AUD", created_at: now.toISOString() },
   { id: "aus-super",    name: "AustralianSuper",        type: "super",      institution: "AustralianSuper",   manual_balance: 89400,   currency: "AUD", created_at: now.toISOString() },
   { id: "property",     name: "Sydney Property",        type: "property",   institution: "Estimated value",   manual_balance: 920000,  currency: "AUD", created_at: now.toISOString() },
 ];
@@ -102,6 +102,16 @@ const transactions: Transaction[] = [
   { id: "t48", date: daysAgo(90), description: "Spotify",                    amount: -11.99,  category_id: "subscriptions", account_id: "cba-credit",   source: "csv", created_at: now.toISOString() },
   { id: "t49", date: daysAgo(92), description: "NAB Home Loan repayment",    amount: -2150.00,category_id: "mortgage",      account_id: "cba-everyday", source: "csv", created_at: now.toISOString() },
   { id: "t50", date: daysAgo(95), description: "Salary — Versent",           amount: 4833.33, category_id: "income",        account_id: "cba-everyday", source: "csv", created_at: now.toISOString() },
+  // April 2026 — 6th month for cashflow
+  { id: "t51", date: daysAgo(128), description: "Salary — Versent",          amount: 4833.33, category_id: "income",        account_id: "cba-everyday", source: "csv", created_at: now.toISOString() },
+  { id: "t52", date: daysAgo(130), description: "NAB Home Loan repayment",   amount: -2150.00,category_id: "mortgage",      account_id: "cba-everyday", source: "csv", created_at: now.toISOString() },
+  { id: "t53", date: daysAgo(133), description: "Woolworths",                amount: -103.60, category_id: "groceries",     account_id: "cba-everyday", source: "csv", created_at: now.toISOString() },
+  { id: "t54", date: daysAgo(140), description: "Salary — Versent",          amount: 4833.33, category_id: "income",        account_id: "cba-everyday", source: "csv", created_at: now.toISOString() },
+  { id: "t55", date: daysAgo(142), description: "AGL Energy",                amount: -141.00, category_id: "utilities",     account_id: "cba-everyday", source: "csv", created_at: now.toISOString() },
+  { id: "t56", date: daysAgo(150), description: "Salary — Versent",          amount: 4833.33, category_id: "income",        account_id: "cba-everyday", source: "csv", created_at: now.toISOString() },
+  { id: "t57", date: daysAgo(152), description: "NAB Home Loan repayment",   amount: -2150.00,category_id: "mortgage",      account_id: "cba-everyday", source: "csv", created_at: now.toISOString() },
+  { id: "t58", date: daysAgo(154), description: "Uber Eats",                 amount: -39.50,  category_id: "dining",        account_id: "cba-credit",   source: "csv", created_at: now.toISOString() },
+  { id: "t59", date: daysAgo(155), description: "Interest — ING Savings",    amount: 98.42,   category_id: "income",        account_id: "ing-savings",  source: "csv", created_at: now.toISOString() },
 ];
 
 const portfolio: PortfolioHolding[] = [
@@ -116,8 +126,8 @@ const portfolio: PortfolioHolding[] = [
 
 const goals: Goal[] = [
   { id: "g1", name: "Emergency Fund",              target_amount: 20000,  target_date: "2026-12-31", account_id: "ing-savings", created_at: now.toISOString() },
-  { id: "g2", name: "Japan Holiday",               target_amount: 8000,   target_date: "2027-03-31", account_id: null,          created_at: now.toISOString() },
-  { id: "g3", name: "Investment Property Deposit", target_amount: 120000, target_date: "2028-06-30", account_id: null,          created_at: now.toISOString() },
+  { id: "g2", name: "Japan Holiday",               target_amount: 8000,   target_date: "2027-03-31", account_id: null,          created_at: "2026-01-01T00:00:00.000Z" },
+  { id: "g3", name: "Investment Property Deposit", target_amount: 120000, target_date: "2028-06-30", account_id: null,          created_at: "2024-07-01T00:00:00.000Z" },
 ];
 
 export async function seedDatabase() {

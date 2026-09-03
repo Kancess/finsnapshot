@@ -126,24 +126,24 @@ export async function queryHealthScore() {
     queryRecurring(),
   ]);
 
-  const factors: { name: string; score: number; note: string }[] = [];
+  const factors: { name: string; score: number; max: number; note: string }[] = [];
 
   // Savings rate (0–30 points)
   const savingsScore = Math.min(30, Math.round((cashflow.avg_savings_rate / 25) * 30));
-  factors.push({ name: "Savings rate", score: savingsScore, note: `${cashflow.avg_savings_rate.toFixed(1)}% avg over 6 months` });
+  factors.push({ name: "Savings rate", score: savingsScore, max: 30, note: `${cashflow.avg_savings_rate.toFixed(1)}% avg over 6 months` });
 
   // Emergency fund (0–25 points) — months of expenses covered by liquid assets
   const liquidAccounts = await getAccounts().then((accs) => accs.filter((a) => ["checking", "savings"].includes(a.type)));
   const liquidBalance = liquidAccounts.reduce((s, a) => s + Math.max(0, a.manual_balance), 0);
   const monthsEmergency = cashflow.avg_expenses > 0 ? liquidBalance / cashflow.avg_expenses : 0;
   const emergencyScore = Math.min(25, Math.round((monthsEmergency / 6) * 25));
-  factors.push({ name: "Emergency fund", score: emergencyScore, note: `${monthsEmergency.toFixed(1)} months of expenses covered` });
+  factors.push({ name: "Emergency fund", score: emergencyScore, max: 25, note: `${monthsEmergency.toFixed(1)} months of expenses covered` });
 
   // Debt to income (0–25 points)
   const debtMonthly = nw.liabilities > 0 ? cashflow.avg_expenses * 0.4 : 0;
   const dtiRatio = cashflow.avg_income > 0 ? debtMonthly / cashflow.avg_income : 0;
   const dtiScore = Math.max(0, Math.round(25 - dtiRatio * 50));
-  factors.push({ name: "Debt ratio", score: dtiScore, note: `${(dtiRatio * 100).toFixed(0)}% debt-to-income ratio` });
+  factors.push({ name: "Debt ratio", score: dtiScore, max: 25, note: `${(dtiRatio * 100).toFixed(0)}% debt-to-income ratio` });
 
   // Investment growth (0–20 points)
   const portfolio = await getPortfolio();
@@ -151,7 +151,7 @@ export async function queryHealthScore() {
     ? portfolio.reduce((s, h) => s + h.gain_pct, 0) / portfolio.length
     : 0;
   const investScore = Math.min(20, Math.round((totalGainPct / 20) * 20));
-  factors.push({ name: "Portfolio growth", score: investScore, note: `${totalGainPct.toFixed(1)}% avg holding gain` });
+  factors.push({ name: "Portfolio growth", score: investScore, max: 20, note: `${totalGainPct.toFixed(1)}% avg holding gain` });
 
   const score = Math.min(100, factors.reduce((s, f) => s + f.score, 0));
   const rating = score >= 80 ? "Excellent" : score >= 65 ? "Good" : score >= 50 ? "Fair" : "Needs work";

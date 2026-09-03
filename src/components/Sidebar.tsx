@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const nav = [
   { href: "/dashboard",    label: "Dashboard",    icon: "▦" },
@@ -15,6 +16,16 @@ const nav = [
 
 export default function Sidebar() {
   const path = usePathname();
+  const router = useRouter();
+  const [prompt, setPrompt] = useState("");
+
+  function handlePromptSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!prompt.trim()) return;
+    router.push(`/ai-tools?q=${encodeURIComponent(prompt.trim())}`);
+    setPrompt("");
+  }
+
   return (
     <aside
       style={{
@@ -64,6 +75,53 @@ export default function Sidebar() {
           );
         })}
       </nav>
+
+      {/* Ask AI prompt */}
+      <div style={{ padding: "12px 10px", borderTop: "1px solid rgba(255,255,255,.08)" }}>
+        <div style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,.35)", letterSpacing: ".08em", textTransform: "uppercase", marginBottom: 7, paddingLeft: 4 }}>Ask AI</div>
+        <form onSubmit={handlePromptSubmit} style={{ position: "relative" }}>
+          <input
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            placeholder="Ask anything about your money…"
+            style={{
+              width: "100%",
+              padding: "8px 32px 8px 10px",
+              borderRadius: 7,
+              border: "1px solid rgba(255,255,255,.14)",
+              background: "rgba(255,255,255,.07)",
+              color: "#fff",
+              fontSize: 12,
+              fontFamily: "inherit",
+              outline: "none",
+              boxSizing: "border-box",
+              caretColor: "#fff",
+            }}
+            onFocus={(e) => { e.target.style.borderColor = "rgba(166,52,70,.7)"; e.target.style.background = "rgba(255,255,255,.1)"; }}
+            onBlur={(e) => { e.target.style.borderColor = "rgba(255,255,255,.14)"; e.target.style.background = "rgba(255,255,255,.07)"; }}
+          />
+          <button
+            type="submit"
+            style={{
+              position: "absolute",
+              right: 6,
+              top: "50%",
+              transform: "translateY(-50%)",
+              background: "none",
+              border: "none",
+              color: prompt.trim() ? "var(--cr)" : "rgba(255,255,255,.25)",
+              fontSize: 14,
+              cursor: prompt.trim() ? "pointer" : "default",
+              padding: "2px 4px",
+              lineHeight: 1,
+              transition: "color .15s",
+            }}
+          >↵</button>
+        </form>
+        <div style={{ fontSize: 10, color: "rgba(255,255,255,.22)", marginTop: 6, paddingLeft: 2, lineHeight: 1.5 }}>
+          Open in ChatGPT or Claude with this site loaded
+        </div>
+      </div>
 
       {/* AI Tools link */}
       <div style={{ padding: "10px 10px 16px", borderTop: "1px solid rgba(255,255,255,.08)" }}>

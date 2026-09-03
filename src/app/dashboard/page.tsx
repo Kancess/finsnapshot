@@ -205,6 +205,45 @@ export default function DashboardPage() {
         ))}
       </div>
 
+      {/* AI Financial Briefing */}
+      {data.netWorth && data.cashflow && data.spending.length > 0 && (() => {
+        const nw = data.netWorth!;
+        const cf = data.cashflow!;
+        const topTwo = data.spending.slice(0, 2);
+        const trendText = cf.trend === "improving" ? "trending up" : cf.trend === "declining" ? "trending down" : "stable";
+        const savingsRate = cf.avg_savings_rate.toFixed(0);
+        const avgSaved = cf.months.reduce((s, m) => s + (m.income - m.expenses), 0) / Math.max(1, cf.months.length);
+        return (
+          <div style={{
+            background: "linear-gradient(135deg, rgba(16,55,102,.06) 0%, rgba(30,138,86,.04) 100%)",
+            border: "1px solid rgba(16,55,102,.14)",
+            borderLeft: "3px solid #103766",
+            borderRadius: 10,
+            padding: "14px 20px",
+            marginBottom: 16,
+            display: "flex",
+            alignItems: "flex-start",
+            gap: 14,
+          }}>
+            <div style={{ fontSize: 18, flexShrink: 0, marginTop: 1 }}>⚡</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "#103766", letterSpacing: ".06em", textTransform: "uppercase", marginBottom: 5 }}>AI Financial Briefing</div>
+              <div style={{ fontSize: 13, color: "var(--mid)", lineHeight: 1.65 }}>
+                Net worth of <strong style={{ color: "var(--mid)" }}>{fmtFull(nw.net_worth)}</strong> ({fmtFull(nw.assets)} assets, {fmtFull(nw.liabilities)} in debt).
+                {" "}Saving <strong style={{ color: "var(--gr)" }}>{savingsRate}%</strong> of income on average — {trendText}.
+                {topTwo.length >= 2 && (
+                  <> Top expenses: <strong>{topTwo[0].category}</strong> ({fmt2(topTwo[0].total)}) and <strong>{topTwo[1].category}</strong> ({fmt2(topTwo[1].total)}) this month.</>
+                )}
+                {" "}Average monthly surplus: <strong style={{ color: avgSaved >= 0 ? "var(--gr)" : "var(--cr)" }}>{avgSaved >= 0 ? "+" : ""}{fmt2(avgSaved)}</strong>.
+              </div>
+            </div>
+            <a href="/ai-tools" style={{ fontSize: 11, color: "#103766", fontWeight: 700, textDecoration: "none", whiteSpace: "nowrap", marginTop: 3, padding: "5px 10px", border: "1px solid rgba(16,55,102,.2)", borderRadius: 6, flexShrink: 0 }}>
+              Ask AI →
+            </a>
+          </div>
+        );
+      })()}
+
       {/* Net Worth Growth chart — full width */}
       {data.nwHistory.length > 1 && (
         <div style={{ background: "var(--s1)", border: "1px solid var(--bd)", borderRadius: 12, padding: "20px 24px 12px", boxShadow: "var(--sh)", marginBottom: 16 }}>
