@@ -295,7 +295,7 @@ function AIToolsInner() {
             <div style={{ fontSize: 11, fontWeight: 700, color: "#103766", letterSpacing: ".06em", textTransform: "uppercase", marginBottom: 6 }}>Your question</div>
             <div style={{ fontSize: 14, color: "var(--mid)", fontWeight: 500, marginBottom: 10, fontStyle: "italic" }}>"{pendingQuestion}"</div>
             <div style={{ fontSize: 12, color: "var(--steel)", lineHeight: 1.55 }}>
-              Open this page in <strong>ChatGPT</strong> (Work plan → in-app browser) or <strong>Chrome</strong> with <code style={{ fontSize: 10, background: "var(--s2)", padding: "1px 4px", borderRadius: 3 }}>chrome://flags/#enable-webmcp-testing</code> enabled, then paste the question above. The AI will call FinSnapshot's tools automatically.
+              Open this page in <strong>ChatGPT</strong> (Work plan → in-app browser) or <strong>Chrome</strong> with <code style={{ fontSize: 10, background: "var(--s2)", padding: "1px 4px", borderRadius: 3 }}>chrome://flags/#enable-webmcp-testing</code> enabled, then paste the question above. The AI will call FinSnap's tools automatically.
             </div>
           </div>
           <button
@@ -422,7 +422,7 @@ function AIToolsInner() {
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {[
                 { step: "1", text: "Enable chrome://flags/#enable-webmcp-testing in Chrome, or use ChatGPT's in-app browser." },
-                { step: "2", text: "FinSnapshot's 14 tools are auto-registered on document.modelContext when the page loads." },
+                { step: "2", text: "FinSnap's 19 tools are auto-registered on document.modelContext when the page loads." },
                 { step: "3", text: "Ask any financial question — the AI calls the right tool, reads your real data, and answers." },
                 { step: "4", text: "Your financial data lives in your browser's IndexedDB. Tool calls go directly from the AI to your page's JavaScript — no backend, no server, no third-party." },
               ].map((s) => (

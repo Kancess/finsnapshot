@@ -177,7 +177,7 @@ export default function Dashboard() {
       <header className="bg-white border-b border-gray-100 px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold text-gray-900">FinSnapshot</h1>
+            <h1 className="text-xl font-bold text-gray-900">FinSnap</h1>
             <p className="text-xs text-gray-400">Your finances, agent-ready</p>
           </div>
           <div className="flex items-center gap-2 bg-violet-50 border border-violet-200 rounded-full px-3 py-1.5">

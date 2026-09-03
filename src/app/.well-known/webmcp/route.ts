@@ -160,7 +160,7 @@ export async function GET() {
   return NextResponse.json(
     {
       version: "1.0",
-      name: "FinSnapshot",
+      name: "FinSnap",
       description: "Personal finance dashboard — query your complete financial picture via WebMCP. Tools execute against IndexedDB data stored in your browser.",
       tools: TOOLS,
     },

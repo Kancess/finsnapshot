@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import Script from "next/script";
 
-// Registers all 14 FinSnapshot tools with Jason McGhee's WebMCP library (webmcp.dev).
+// Registers all 19 FinSnap tools with Jason McGhee's WebMCP library (webmcp.dev).
 // This creates the blue widget and WebSocket bridge that lets Claude Desktop (and other
 // MCP clients) call tools directly via: npx @jason.today/webmcp@latest --config claude
 export default function WebMCPBridge() {
@@ -20,7 +20,7 @@ export default function WebMCPBridge() {
 
     async function callTool(name: string, args: unknown) {
       const tools = (window as any).__finsnap_tools;
-      if (!tools?.[name]) throw new Error(`FinSnapshot not ready — reload the page`);
+      if (!tools?.[name]) throw new Error(`FinSnap not ready — reload the page`);
       return tool(await tools[name](args ?? {}));
     }
 

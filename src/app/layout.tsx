@@ -12,7 +12,7 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "FinSnapshot — Your finances, agent-ready",
+  title: "FinSnap — Your finances, agent-ready",
   description: "Personal finance dashboard. Upload bank statements, set categories, and let AI agents query your complete financial picture via WebMCP.",
 };
 
@@ -96,7 +96,7 @@ const webmcpShim = `(function(){
             n++;
             var r=run();
             if(r){clearInterval(iv);r.then(res).catch(rej);}
-            else if(n>40){clearInterval(iv);res({error:'FinSnapshot not ready — reload the page'});}
+            else if(n>40){clearInterval(iv);res({error:'FinSnap not ready — reload the page'});}
           },100);
         });
       }
