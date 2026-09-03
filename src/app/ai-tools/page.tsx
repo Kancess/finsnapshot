@@ -187,15 +187,15 @@ const TOOLS = [
 ];
 
 const PROMPTS = [
+  "I want to buy a property in Sydney — based on my actual finances, what can I realistically afford and what deposit do I have available?",
+  "What size mortgage could I service based on my income and expenses over the last 6 months?",
+  "I'm planning a 3-week trip to Japan — can I afford it this year without derailing my savings goals?",
   "Give me a full financial briefing — net worth, savings rate, goals, and anything I should be worried about.",
   "How much can I safely spend for the rest of this month without blowing my budget?",
   "Project my cashflow for the next 6 months — will I be saving more or less?",
   "Am I spending too much on dining and subscriptions this month compared to last?",
-  "How is my investment portfolio performing and which holding has the best return?",
   "Which recurring subscriptions could I cancel to free up budget?",
-  "Set my dining budget to $300 per month.",
-  "I have a CSV of last month's bank transactions — import them and categorise anything that looks like groceries or transport.",
-  "Set me a new goal to save $20,000 for a Europe trip by June 2027, then delete the Japan Holiday goal.",
+  "Set me a new goal to save $20,000 for a Europe trip by June 2027.",
 ];
 
 function ScoreArc({ score }: { score: number }) {
@@ -277,7 +277,7 @@ function AIToolsInner() {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
         <div>
           <h1 style={{ fontSize: 26, fontWeight: 800, color: "var(--mid)", letterSpacing: "-.03em" }}>AI Tools</h1>
-          <p style={{ fontSize: 13, color: "var(--steel)", marginTop: 2 }}>19 WebMCP tools registered via <code style={{ background: "var(--s2)", padding: "1px 5px", borderRadius: 4, fontSize: 11 }}>document.modelContext</code></p>
+          <p style={{ fontSize: 13, color: "var(--steel)", marginTop: 2 }}>Your financial context layer — 19 WebMCP tools any agent can call via <code style={{ background: "var(--s2)", padding: "1px 5px", borderRadius: 4, fontSize: 11 }}>document.modelContext</code></p>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
           <div style={{ background: "var(--gr-l)", color: "var(--gr)", borderRadius: 100, padding: "6px 14px", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", gap: 5 }}>
@@ -423,7 +423,7 @@ function AIToolsInner() {
               {[
                 { step: "1", text: "Enable chrome://flags/#enable-webmcp-testing in Chrome, or use ChatGPT's in-app browser." },
                 { step: "2", text: "FinSnap's 19 tools are auto-registered on document.modelContext when the page loads." },
-                { step: "3", text: "Ask any financial question — the AI calls the right tool, reads your real data, and answers." },
+                { step: "3", text: "Ask anything that needs financial context — property affordability, mortgage capacity, travel budgets, investment advice. The AI reads your real data and answers with specificity no generic prompt can match." },
                 { step: "4", text: "Your financial data lives in your browser's IndexedDB. Tool calls go directly from the AI to your page's JavaScript — no backend, no server, no third-party." },
               ].map((s) => (
                 <div key={s.step} style={{ display: "flex", gap: 10 }}>
