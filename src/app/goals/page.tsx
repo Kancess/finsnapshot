@@ -59,6 +59,7 @@ export default function GoalsPage() {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [form, setForm] = useState({ name: "", target_amount: "", target_date: "", account_id: "" });
   const [saving, setSaving] = useState(false);
@@ -81,20 +82,34 @@ export default function GoalsPage() {
 
   useEffect(() => { load(); }, []);
 
+  function startEdit(g: GoalWithProgress) {
+    setEditingId(g.id);
+    setForm({ name: g.name, target_amount: String(g.target_amount), target_date: g.target_date, account_id: g.account_id ?? "" });
+    setShowForm(false);
+    setConfirmDelete(null);
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setForm({ name: "", target_amount: "", target_date: "", account_id: "" });
+  }
+
   async function handleAdd() {
     if (!form.name || !form.target_amount || !form.target_date) return;
     setSaving(true);
+    const existing = editingId ? goals.find((g) => g.id === editingId) : null;
     const goal: Goal = {
-      id: `g-${Date.now()}`,
+      id: editingId ?? `g-${Date.now()}`,
       name: form.name,
       target_amount: parseFloat(form.target_amount),
       target_date: form.target_date,
       account_id: form.account_id || null,
-      created_at: new Date().toISOString(),
+      created_at: existing?.created_at ?? new Date().toISOString(),
     };
     await putGoal(goal);
     setForm({ name: "", target_amount: "", target_date: "", account_id: "" });
     setShowForm(false);
+    setEditingId(null);
     setSaving(false);
     await load();
   }
@@ -141,7 +156,7 @@ export default function GoalsPage() {
           <p style={{ fontSize: 13, color: "var(--steel)", marginTop: 2 }}>Track your financial milestones — let AI help you plan the path</p>
         </div>
         <button
-          onClick={() => setShowForm((v) => !v)}
+          onClick={() => { cancelEdit(); setShowForm((v) => !v); }}
           style={{
             padding: "9px 18px",
             background: showForm ? "var(--s1)" : "var(--mid)",
@@ -178,6 +193,7 @@ export default function GoalsPage() {
       {showForm && (
         <div style={{ background: "var(--s1)", border: "1px solid var(--bd)", borderRadius: 12, padding: "22px 24px", boxShadow: "var(--sh)", marginBottom: 22 }}>
           <div style={{ fontSize: 15, fontWeight: 800, color: "var(--mid)", marginBottom: 18 }}>New Goal</div>
+
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 14, marginBottom: 16 }}>
             <div>
               <label style={labelStyle}>Goal Name</label>
@@ -284,11 +300,17 @@ export default function GoalsPage() {
                         >Cancel</button>
                       </div>
                     ) : (
-                      <button
-                        onClick={() => setConfirmDelete(g.id)}
-                        style={{ padding: "5px 9px", background: "transparent", color: "var(--steel)", border: "1px solid var(--bd)", borderRadius: 6, fontSize: 12, cursor: "pointer", fontFamily: "inherit", lineHeight: 1 }}
-                        title="Delete goal"
-                      >✕</button>
+                      <div style={{ display: "flex", gap: 6 }}>
+                        <button
+                          onClick={() => editingId === g.id ? cancelEdit() : startEdit(g)}
+                          style={{ padding: "5px 9px", background: editingId === g.id ? "var(--s2)" : "transparent", color: "var(--steel)", border: "1px solid var(--bd)", borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}
+                        >{editingId === g.id ? "Cancel" : "Edit"}</button>
+                        <button
+                          onClick={() => setConfirmDelete(g.id)}
+                          style={{ padding: "5px 9px", background: "transparent", color: "var(--steel)", border: "1px solid var(--bd)", borderRadius: 6, fontSize: 12, cursor: "pointer", fontFamily: "inherit", lineHeight: 1 }}
+                          title="Delete goal"
+                        >✕</button>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -314,10 +336,44 @@ export default function GoalsPage() {
                 </div>
 
                 {/* Remaining amount highlight */}
-                {g.pct < 100 && (
+                {g.pct < 100 && editingId !== g.id && (
                   <div style={{ marginTop: 12, padding: "8px 12px", background: `${colour}10`, borderRadius: 7, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <span style={{ fontSize: 11, color: "var(--steel)" }}>Still needed</span>
                     <span style={{ fontSize: 13, fontWeight: 800, color: colour }}>{fmt(Math.max(0, g.target_amount - g.current))}</span>
+                  </div>
+                )}
+
+                {/* Inline edit form */}
+                {editingId === g.id && (
+                  <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid var(--bd)" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr auto", gap: 10, alignItems: "flex-end" }}>
+                      <div>
+                        <label style={labelStyle}>Goal name</label>
+                        <input style={inputStyle} value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Goal name" />
+                      </div>
+                      <div>
+                        <label style={labelStyle}>Target amount</label>
+                        <input style={inputStyle} type="number" value={form.target_amount} onChange={(e) => setForm((f) => ({ ...f, target_amount: e.target.value }))} placeholder="10000" />
+                      </div>
+                      <div>
+                        <label style={labelStyle}>Target date</label>
+                        <input style={inputStyle} type="date" value={form.target_date} onChange={(e) => setForm((f) => ({ ...f, target_date: e.target.value }))} />
+                      </div>
+                      <div>
+                        <label style={labelStyle}>Linked account</label>
+                        <select style={inputStyle} value={form.account_id} onChange={(e) => setForm((f) => ({ ...f, account_id: e.target.value }))}>
+                          <option value="">No account</option>
+                          {accounts.filter((a) => a.manual_balance > 0).map((a) => (
+                            <option key={a.id} value={a.id}>{a.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <button
+                        onClick={handleAdd}
+                        disabled={saving || !form.name || !form.target_amount || !form.target_date}
+                        style={{ padding: "9px 16px", background: "var(--mid)", color: "#fff", border: "none", borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: "pointer", opacity: saving ? 0.6 : 1, fontFamily: "inherit", whiteSpace: "nowrap" }}
+                      >{saving ? "Saving…" : "Save"}</button>
+                    </div>
                   </div>
                 )}
               </div>
