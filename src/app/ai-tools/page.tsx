@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { isSeeded } from "@/lib/db";
 import { seedDatabase } from "@/lib/seed";
@@ -241,6 +241,14 @@ function ScoreArc({ score }: { score: number }) {
 }
 
 export default function AIToolsPage() {
+  return (
+    <Suspense>
+      <AIToolsInner />
+    </Suspense>
+  );
+}
+
+function AIToolsInner() {
   const [health, setHealth] = useState<HealthData | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
   const searchParams = useSearchParams();
