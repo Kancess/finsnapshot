@@ -13,7 +13,7 @@ const jakarta = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: "FinSnap — Your finances, agent-ready",
-  description: "Personal finance dashboard. Upload bank statements, set categories, and let AI agents query your complete financial picture via WebMCP.",
+  description: "Personal finance dashboard with 19 WebMCP tools. Any AI agent browsing the page gets immediate access to your net worth, cash flow, goals, portfolio, and planning tools — no setup required.",
 };
 
 // Shim: install document.modelContext (WebMCP spec) if browser doesn't have it natively.
