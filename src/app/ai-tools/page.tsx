@@ -311,18 +311,42 @@ export default function AIToolsPage() {
             </div>
           )}
 
+          {/* Connect with Claude Desktop */}
+          <div style={{ background: "var(--s1)", border: "1px solid var(--bd)", borderRadius: 12, padding: "18px 20px", boxShadow: "var(--sh)" }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "var(--mid)", marginBottom: 4 }}>Connect with Claude Desktop</div>
+            <div style={{ fontSize: 11, color: "var(--steel)", marginBottom: 12 }}>via WebMCP bridge (webmcp.dev)</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {[
+                { step: "1", text: "Add the WebMCP server to Claude Desktop config and restart:", code: `npx @jason.today/webmcp@latest --config claude` },
+                { step: "2", text: "Ask Claude to generate a webmcp token, then click the blue widget in the bottom-right corner of this page and paste it." },
+                { step: "3", text: "Now ask Claude anything about your finances — it calls the tools directly." },
+              ].map((s) => (
+                <div key={s.step} style={{ display: "flex", gap: 10 }}>
+                  <div style={{ width: 20, height: 20, minWidth: 20, borderRadius: 100, background: "var(--navy)", color: "#fff", fontSize: 10, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>{s.step}</div>
+                  <div>
+                    <p style={{ fontSize: 12, color: "var(--slate)", margin: 0, lineHeight: 1.5 }}>{s.text}</p>
+                    {s.code && (
+                      <code style={{ display: "block", marginTop: 4, fontSize: 10, background: "var(--bg)", border: "1px solid var(--bd)", borderRadius: 5, padding: "5px 8px", color: "var(--mid)", fontFamily: "monospace", overflowX: "auto" }}>{s.code}</code>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* How it works */}
           <div style={{ background: "var(--s1)", border: "1px solid var(--bd)", borderRadius: 12, padding: "18px 20px", boxShadow: "var(--sh)" }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "var(--mid)", marginBottom: 12 }}>How it works</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "var(--mid)", marginBottom: 4 }}>Connect with ChatGPT / Chrome</div>
+            <div style={{ fontSize: 11, color: "var(--steel)", marginBottom: 12 }}>via native WebMCP (document.modelContext)</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {[
-                { step: "1", text: "FinSnapshot registers 14 tools on page load via document.modelContext — the WebMCP standard API" },
-                { step: "2", text: "A WebMCP-compatible AI (e.g. ChatGPT) detects the available tools automatically" },
-                { step: "3", text: "Ask any financial question — the AI calls the right tool, reads your real data, and answers" },
+                { step: "1", text: "Enable chrome://flags/#enable-webmcp-testing in Chrome, or use ChatGPT's in-app browser." },
+                { step: "2", text: "FinSnapshot's 14 tools are auto-registered on document.modelContext when the page loads." },
+                { step: "3", text: "Ask any financial question — the AI calls the right tool, reads your real data, and answers." },
                 { step: "4", text: "All data stays in your browser's IndexedDB. Nothing leaves your device." },
               ].map((s) => (
                 <div key={s.step} style={{ display: "flex", gap: 10 }}>
-                  <div style={{ width: 20, height: 20, borderRadius: 100, background: "var(--navy)", color: "#fff", fontSize: 10, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>{s.step}</div>
+                  <div style={{ width: 20, height: 20, minWidth: 20, borderRadius: 100, background: "var(--navy)", color: "#fff", fontSize: 10, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>{s.step}</div>
                   <p style={{ fontSize: 12, color: "var(--slate)", margin: 0, lineHeight: 1.5 }}>{s.text}</p>
                 </div>
               ))}

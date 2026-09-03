@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
 import WebMCPProvider from "@/components/WebMCPProvider";
+import WebMCPBridge from "@/components/WebMCPBridge";
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
@@ -47,7 +48,9 @@ const webmcpShim = `(function(){
         var name=typeof toolOrName==='string'?toolOrName:toolOrName.name;
         var t=_tools.find(function(t){return t.name===name;});
         if(!t)return Promise.reject(new Error('Unknown tool: '+name));
-        return Promise.resolve().then(function(){return t.execute(inputArgs||{},{signal:(opts&&opts.signal)||null});});
+        return Promise.resolve()
+          .then(function(){return t.execute(inputArgs||{},{signal:(opts&&opts.signal)||null});})
+          .then(function(r){return typeof r==='string'?r:JSON.stringify(r);});
       }
     };
     try{Object.defineProperty(document,'modelContext',{value:mc,configurable:true,writable:false,enumerable:true});}catch(e){}
@@ -75,20 +78,20 @@ const webmcpShim = `(function(){
       description:t.desc,
       inputSchema:t.schema,
       execute:function(args){
+        // Returns a raw object — the browser (or our shim's executeTool) serialises to DOMString.
         function run(){
           if(window.__finsnap_tools&&window.__finsnap_tools[t.name])
-            return Promise.resolve(window.__finsnap_tools[t.name](args||{}))
-              .then(function(r){return JSON.stringify(r);});
+            return Promise.resolve(window.__finsnap_tools[t.name](args||{}));
           return null;
         }
         var r=run();
         if(r)return r;
-        return new Promise(function(res){
+        return new Promise(function(res,rej){
           var n=0,iv=setInterval(function(){
             n++;
             var r=run();
-            if(r){clearInterval(iv);r.then(res);}
-            else if(n>40){clearInterval(iv);res(JSON.stringify({error:'FinSnapshot not ready — reload the page'}));}
+            if(r){clearInterval(iv);r.then(res).catch(rej);}
+            else if(n>40){clearInterval(iv);res({error:'FinSnapshot not ready — reload the page'});}
           },100);
         });
       }
@@ -107,6 +110,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       </head>
       <body className="flex h-screen overflow-hidden" style={{ background: "var(--bg)" }}>
         <WebMCPProvider />
+        <WebMCPBridge />
         <Sidebar />
         <main className="flex-1 overflow-y-auto">
           {children}
