@@ -424,7 +424,7 @@ function AIToolsInner() {
                 { step: "1", text: "Enable chrome://flags/#enable-webmcp-testing in Chrome, or use ChatGPT's in-app browser." },
                 { step: "2", text: "FinSnap's 19 tools are auto-registered on document.modelContext when the page loads." },
                 { step: "3", text: "Ask anything that needs financial context — property affordability, mortgage capacity, travel budgets, investment advice. The AI reads your real data and answers with specificity no generic prompt can match." },
-                { step: "4", text: "Your financial data lives in your browser's IndexedDB. Tool calls go directly from the AI to your page's JavaScript — no backend, no server, no third-party." },
+                { step: "4", text: "No API keys, no custom GPT setup, no developer integration work. Any WebMCP-compatible agent gets structured access to your financial tools the moment it loads the page." },
               ].map((s) => (
                 <div key={s.step} style={{ display: "flex", gap: 10 }}>
                   <div style={{ width: 20, height: 20, minWidth: 20, borderRadius: 100, background: "var(--navy)", color: "#fff", fontSize: 10, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>{s.step}</div>
